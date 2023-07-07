@@ -63,11 +63,7 @@ const OurTime = () => {
       const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
 
       // Get the timezone from the location coordinates
-      const timezone = await getTimezoneFromCoordinates(
-        location.coords.latitude,
-        location.coords.longitude,
-        Constants.manifest.extra.geocodingApiKey
-      );
+      const timezone = await getTimezoneFromCoordinates(location.coords.latitude, location.coords.longitude, process.env.GEOCODING_API_KEY);
 
       // Update the user's document in Firestore with the new timezone
       const userRef = doc(db, "users", auth.currentUser.uid);
@@ -80,7 +76,7 @@ const OurTime = () => {
       const currentCountry = await getCountryFromCoordinates(
         location.coords.latitude,
         location.coords.longitude,
-        Constants.manifest.extra.geocodingApiKey
+        process.env.GEOCODING_API_KEY
       );
 
       // Save the country in state

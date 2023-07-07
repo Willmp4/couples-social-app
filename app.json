@@ -31,12 +31,15 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2fe4cb90-d1b5-433c-92a6-f217b614656a"
+        "projectId": "027812dc-2644-45cb-8001-d916c20feddb"
       }
     },
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
-    "owner": "willmp4"
+    "owner": "willmp4",
+    "updates": {
+      "url": "https://u.expo.dev/027812dc-2644-45cb-8001-d916c20feddb"
+    }
   }
 }
