@@ -15,6 +15,9 @@
       "**/*"
     ],
     "ios": {
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to display time at your location."
+      },
       "supportsTablet": true
     },
     "android": {
@@ -25,6 +28,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2fe4cb90-d1b5-433c-92a6-f217b614656a"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "owner": "willmp4"
   }
 }

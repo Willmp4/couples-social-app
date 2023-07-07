@@ -1,0 +1,21 @@
+TODO:
+
+fix profile screen bug 
+
+Couples social meida
+
+Wishlist  { the kind of thing they want, their style } 
+Current viewing { youtube, neflix, other couples can watch }
+Dm { Ai to be able to mediate }
+Calander { Couples could share their date ideas and scheduels } 
+Personality traits { choose the traits }
+Couples leadboard { followers instead of points } 
+Progression tree { see what their goals are and yours } 
+Pintrest, { coupleIdeas, would be specfic for their couples, Mood boards } 
+Double dates { Tinder feature }
+Playlists { Spotify api }
+Avatars { comsmetics, send gifts } 
+Games { quiz, 8ball } 
+Re selling { selling two tickets } 
+Date gen { random date ideas, e dates } 
+Facetime { able do lives } 
