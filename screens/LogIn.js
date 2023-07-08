@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, TextInput, View, Alert, Text, StyleSheet } from "react-native";
+import { ImageBackground, Image, StyleSheet, View, TextInput, Text, TouchableOpacity, Alert } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../utils/Firebase";
 import { useNavigation } from "@react-navigation/native";
@@ -45,40 +45,79 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} placeholderTextColor="black" />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry // hide the password
-        placeholderTextColor="black"
-      />
-      <Text style={styles.errorText}>{error}</Text>
-      <Button title="Login" onPress={login} />
-      <Button title="Sign Up" onPress={() => navigation.navigate("SignUp")} />
-    </View>
+<ImageBackground style={styles.backgroundImage}>
+  <View style={styles.logoContainer}>
+    <Image source={require('../assets/favicon.png')} style={styles.logo} />
+
+      </View>
+      <View style={styles.container}>
+        <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} placeholderTextColor="#000" />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry // hide the password
+          placeholderTextColor="#000"
+        />
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.button} onPress={login}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("SignUp")}>
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
     flex: 1,
+    resizeMode: "cover",
     justifyContent: "center",
-    padding: 16,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 50,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+  },
+  container: {
+    paddingHorizontal: 30,
   },
   input: {
-    height: 40,
-    color: "black",
-    borderColor: "gray",
+    height: 50,
+    backgroundColor: "#fff",
+    borderColor: "#000",
     borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingLeft: 8,
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingHorizontal: 15,
+    fontSize: 16,
   },
   errorText: {
     color: "red",
-    marginBottom: 10,
+    marginBottom: 20,
+    fontWeight: "bold",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  button: {
+    backgroundColor: "#000",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
