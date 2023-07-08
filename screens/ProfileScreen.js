@@ -1,37 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { Text, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { Input } from "react-native-elements";
-import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
-import { collection, doc, setDoc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, storage, db } from "../utils/Firebase";
+import { doc, setDoc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
+import { auth, db } from "../utils/Firebase";
 import Login from "./LogIn";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Button } from "react-native-elements";
-import { addPostToFirestore, uploadImageToFirebase } from "../utils/firebaseUtil";
+import {uploadImageToFirebase } from "../utils/firebaseUtil";
 import Logout from "../components/Logout";
 import ProfilePicture from "../components/ProfilePicture";
+import useAuth from "../hooks/useAuth";
+
 
 const ProfileScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [isNewUser, setIsNewUser] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [userDetails, setUserDetails] = useState(null);
   const [username, setUsername] = useState("");
   const [partner, setPartner] = useState("");
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { user, loading } = useAuth()
 
   useEffect(() => {
     const fetchUserDetails = async () => {
