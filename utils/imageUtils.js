@@ -1,5 +1,3 @@
-// utils/imageUtils.js
-
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 
 export const reduceImageResolution = async (imageUri, maxWidth = 800, compressQuality = 0.7) => {
