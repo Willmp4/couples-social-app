@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, Button, StyleSheet, Modal, TextInput } from "react-native";
-import { doc, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
+import { addDoc, collection, doc, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
 import { ref, deleteObject } from "@firebase/storage";
 import { db, storage } from "../utils/Firebase";
 import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from "react-native-popup-menu";
@@ -53,6 +53,16 @@ export default function Post({ post, deletePost, showOptions, postType }) {
     }
   };
 
+  const pinPost = async () => {
+    const highlightsCollectionRef = collection(db, "highlights");
+    try {
+      await addDoc(highlightsCollectionRef, post);
+    } catch (e) {
+      console.error("Error pinning post: ", e);
+    }
+};
+
+
   return (
     <MenuProvider skipInstanceCheck={true}>
       <View style={styles.item}>
@@ -69,7 +79,7 @@ export default function Post({ post, deletePost, showOptions, postType }) {
               <MenuOptions>
                 {postType === "user" && <MenuOption onSelect={() => setEditing(true)} text="Edit" />}
                 {postType === "user" && <MenuOption onSelect={deletePostHandler} text="Delete Post" />}
-                {postType === "blog" && <MenuOption onSelect={() => {}} text="Pin Post" />}
+                {postType === "blog" && <MenuOption onSelect={pinPost} text="Pin Post" />}
                 {postType === "blog" && <MenuOption onSelect={() => {}} text="Share Post" />}
                 {postType === "blog" && <MenuOption onSelect={() => {}} text="Report Post" />}
                 {editing && <MenuOption onSelect={editPost} text="Save Changes" />}

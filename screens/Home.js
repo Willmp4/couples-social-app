@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Dimensions } from "react-native";
+import { View, Text, Dimensions, Alert } from "react-native";
 import { auth, db } from "../utils/Firebase";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { collection, query, getDocs, where, doc as docRef, deleteDoc, orderBy, onSnapshot } from "firebase/firestore";
 import useAuth from '../hooks/useAuth'; 
 import HighlightsCarousel from "../components/HighlightsCarousel";
 import styles from "../styles/Home.styles"
+
 
 const { width } = Dimensions.get("window");
 const AUTO_SCROLL_INTERVAL = 4000;
@@ -16,25 +17,61 @@ export default function Home() {
   const scrollIntervalRef = useRef(null);
   const { user, loading } = useAuth();
 
-  const fetchAndSetHighlightPosts = async () => {
-    const postsQuery = query(
-      collection(db, "blogPosts"),
+  const fetchAndSetHighlightPosts = () => {
+    const highlightsQuery = query(
+      collection(db, "highlights"),
       orderBy("created_at", "desc"), // assuming posts have a 'createdAt' field
-      limit(10) // get 10 posts for highlights
     );
-
-    const querySnapshot = await getDocs(postsQuery);
-
-    const posts = [];
-    querySnapshot.forEach((doc) => {
-      posts.push({
-        id: doc.id,
-        ...doc.data(),
+  
+    const unsubscribe = onSnapshot(highlightsQuery, (querySnapshot) => {
+      const posts = [];
+      querySnapshot.forEach((doc) => {
+        posts.push({
+          id: doc.id,
+          ...doc.data(),
+        });
       });
+  
+      setHighlights(posts);
     });
-
-    setHighlights(posts);
+  
+    // Return the unsubscribe function to ensure we stop listening when the component is unmounted
+    return unsubscribe;
   };
+
+  useEffect(() => {
+    const unsubscribe = fetchAndSetHighlightPosts();
+  
+    // Cleanup: unsubscribe from updates when component unmounts
+    return unsubscribe;
+  }, [db]);
+  
+  
+
+  const deleteHighlight = async (blogPostId) => {
+    try {
+      // get the reference to the highlights collection
+      const highlightsCollectionRef = collection(db, "highlights");
+  
+      // create a query to find the document with the matching id
+      const queryRef = query(highlightsCollectionRef, where("id", "==", blogPostId));
+  
+      // get the documents matching the query
+      const querySnapshot = await getDocs(queryRef);
+  
+      // iterate over the documents and delete them
+      querySnapshot.forEach((doc) => {
+        deleteDoc(docRef(highlightsCollectionRef, doc.id));
+      });
+  
+      fetchAndSetHighlightPosts(); 
+      Alert.alert("Post deleted.")
+    } catch (e) {
+      console.error("Error deleting highlight: ", e);
+    }
+  };
+  
+  
 
   const scrollToNextHighlight = () => {
     setCurrentPosition((prevPosition) => {
@@ -78,7 +115,9 @@ export default function Home() {
         onScrollBeginDrag={handleScrollBeginDrag}
         onScrollEndDrag={handleScrollEndDrag}
         onMomentumScrollEnd={handleMomentumScrollEnd}
+        onLongPress={deleteHighlight}
       />
+
     </View>
   );
 }
