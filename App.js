@@ -12,6 +12,7 @@ import MyPostsScreen from "./screens/MyPostsScreen";
 import { ActivityIndicator } from "react-native-paper";
 import { auth } from "./utils/Firebase";
 import CouplesDashBoard from "./screens/CouplesDashboard";
+import Toast from 'react-native-toast-message'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -83,6 +84,7 @@ export default function App() {
           </>
         )}
       </Stack.Navigator>
+      <Toast/>
     </NavigationContainer>
   );
 }
