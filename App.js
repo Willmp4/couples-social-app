@@ -8,6 +8,7 @@ import MakePost from "./screens/BlogPostImage";
 import ProfileScreen from "./screens/ProfileScreen";
 import LogIn from "./screens/LogIn";
 import SignUp from "./screens/SignUp";
+import ForgotPassword from "./screens/ForgotPasswordScreen";
 import MyPostsScreen from "./screens/MyPostsScreen";
 import { ActivityIndicator } from "react-native-paper";
 import { auth } from "./utils/Firebase";
@@ -81,6 +82,7 @@ export default function App() {
           <>
             <Stack.Screen name="LogIn" component={LogIn} />
             <Stack.Screen name="SignUp" component={SignUp} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
           </>
         )}
       </Stack.Navigator>

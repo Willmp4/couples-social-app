@@ -44,11 +44,11 @@ export default function Login() {
       });
   };
 
-  return (
-<ImageBackground style={styles.backgroundImage}>
-  <View style={styles.logoContainer}>
-    <Image source={require('../assets/favicon.png')} style={styles.logo} />
 
+  return (
+    <ImageBackground style={styles.backgroundImage}>
+      <View style={styles.logoContainer}>
+        <Image source={require('../assets/favicon.png')} style={styles.logo} />
       </View>
       <View style={styles.container}>
         <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} placeholderTextColor="#000" />
@@ -57,16 +57,20 @@ export default function Login() {
           placeholder="Password"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry // hide the password
+          secureTextEntry
           placeholderTextColor="#000"
         />
         <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity style={styles.button} onPress={login}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("SignUp")}>
+        {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("SignUp")}>
           <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <View style={styles.footerContainer}>
+          <Text>Haven't got an account? <Text style={styles.linkText} onPress={() => navigation.navigate("SignUp")}>SignUp</Text></Text>
+          <Text style={styles.forgotPassword} onPress={() => navigation.navigate("ForgotPassword")}>Forgot password?</Text>
+        </View>
       </View>
     </ImageBackground>
   );
@@ -104,10 +108,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontWeight: "bold",
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
   button: {
     backgroundColor: "#000",
     padding: 15,
@@ -119,5 +119,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  footerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  linkText: {
+    color: "blue",
+  },
+  forgotPassword: {
+    color: "blue",
+    fontStyle: "italic",
   },
 });
