@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, TextInput, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../utils/Firebase";
-
+import styles from "../styles/Login.styles";
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
 
@@ -37,31 +37,3 @@ export default function ForgotPassword() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 30,
-  },
-  input: {
-    height: 50,
-    backgroundColor: "#fff",
-    borderColor: "#000",
-    borderWidth: 1,
-    borderRadius: 10,
-    marginBottom: 20,
-    paddingHorizontal: 15,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: "#000",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
