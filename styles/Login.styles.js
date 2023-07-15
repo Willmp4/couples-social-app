@@ -15,6 +15,13 @@ const styles = StyleSheet.create({
       height: 100,
     },
     container: {
+      // flex: 1,
+      // justifyContent:"center",
+      paddingHorizontal: 30,
+    },
+    forgotPasswordContainer: {
+      flex: 1,
+      justifyContent: "center",
       paddingHorizontal: 30,
     },
     input: {
@@ -57,3 +64,4 @@ const styles = StyleSheet.create({
     },
   });
   
+export default styles;

@@ -22,7 +22,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.forgotPasswordContainer}>
       <TextInput
         style={styles.input}
         placeholder="Email"
