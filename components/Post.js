@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, Button, StyleSheet, Modal, TextInput } from "react-native";
-import { addDoc, collection, doc, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
+import { View, Text, Image, Button, StyleSheet, Modal, TextInput, Alert } from "react-native";
+import { addDoc, collection, doc, query, where, updateDoc, getDoc, getDocs } from "firebase/firestore";
 import { ref, deleteObject } from "@firebase/storage";
 import { db, storage } from "../utils/Firebase";
 import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from "react-native-popup-menu";
+import Toast from 'react-native-toast-message';
 
 export default function Post({ post, deletePost, showOptions, postType }) {
   const [editing, setEditing] = useState(false);
@@ -53,16 +54,34 @@ export default function Post({ post, deletePost, showOptions, postType }) {
     }
   };
 
-  const pinPost = async () => {
+  const pinPost = async (post) => {
+    // get the reference to the highlights collection
     const highlightsCollectionRef = collection(db, "highlights");
+  
+    // create a query to find the document with the matching uid
+    const queryRef = query(highlightsCollectionRef, where("id", "==", post.id));
+  
+    // get the documents matching the query
+    const querySnapshot = await getDocs(queryRef);
+  
+    // check if the post is already in the highlights
+    if (!querySnapshot.empty) {
+      Toast.show({
+        type: 'success',
+        text1:"This post is already in the highlights"
+      });
+      return;
+    }
+  
+    // if the post is not in the highlights, add it
     try {
       await addDoc(highlightsCollectionRef, post);
+      console.log("Post added to highlights");
     } catch (e) {
       console.error("Error pinning post: ", e);
     }
-};
-
-
+  };
+  
   return (
     <MenuProvider skipInstanceCheck={true}>
       <View style={styles.item}>
@@ -79,7 +98,7 @@ export default function Post({ post, deletePost, showOptions, postType }) {
               <MenuOptions>
                 {postType === "user" && <MenuOption onSelect={() => setEditing(true)} text="Edit" />}
                 {postType === "user" && <MenuOption onSelect={deletePostHandler} text="Delete Post" />}
-                {postType === "blog" && <MenuOption onSelect={pinPost} text="Pin Post" />}
+                {postType === "blog" && <MenuOption onSelect={() =>pinPost(post)} text="Pin Post" />}
                 {postType === "blog" && <MenuOption onSelect={() => {}} text="Share Post" />}
                 {postType === "blog" && <MenuOption onSelect={() => {}} text="Report Post" />}
                 {editing && <MenuOption onSelect={editPost} text="Save Changes" />}
