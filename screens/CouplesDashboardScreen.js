@@ -1,8 +1,8 @@
     import { createDrawerNavigator } from "@react-navigation/drawer";
-    import OurTime from "./OurTime";
+    import OurTime from "./OurTimeScreen";
     import { NavigationContainer } from "@react-navigation/native";
     import { Text } from "react-native";
-    import Blog from "./Blog";
+    import Blog from "./BlogScreen";
     import MakePost from "./BlogPostImage";
 
     const Drawer = createDrawerNavigator();

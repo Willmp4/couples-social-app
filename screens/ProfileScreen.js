@@ -3,7 +3,7 @@ import { Text, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, Sc
 import { Input } from "react-native-elements";
 import { doc, setDoc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../utils/Firebase";
-import Login from "./LogIn";
+import Login from "./LogInScreen";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Button } from "react-native-elements";
 import {uploadImageToFirebase } from "../utils/firebaseUtil";

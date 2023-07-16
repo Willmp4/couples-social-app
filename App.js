@@ -3,16 +3,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
-import HomeScreen from "./screens/Home";
+import HomeScreen from "./screens/HomeScreen";
 import MakePost from "./screens/BlogPostImage";
 import ProfileScreen from "./screens/ProfileScreen";
-import LogIn from "./screens/LogIn";
-import SignUp from "./screens/SignUp";
+import LogIn from "./screens/LogInScreen";
+import SignUp from "./screens/SignUpScreen";
 import ForgotPassword from "./screens/ForgotPasswordScreen";
 import MyPostsScreen from "./screens/MyPostsScreen";
 import { ActivityIndicator } from "react-native-paper";
 import { auth } from "./utils/Firebase";
-import CouplesDashBoard from "./screens/CouplesDashboard";
+import CouplesDashBoard from "./screens/CouplesDashboardScreen";
 import Toast from 'react-native-toast-message'
 
 const Tab = createBottomTabNavigator();
