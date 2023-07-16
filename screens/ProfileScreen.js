@@ -24,6 +24,7 @@ const ProfileScreen = ({ navigation }) => {
 
   useEffect(() => {
     let unsubscribe;
+
     const fetchUserDetails = async () => {
       try {
         if (user) {
@@ -44,15 +45,16 @@ const ProfileScreen = ({ navigation }) => {
         console.error("Error fetching user details:", error);
       }
     };
-  
+
     fetchUserDetails();
+
+    // This is the cleanup function that will be executed when the component unmounts.
     return () => {
       if (unsubscribe) {
         unsubscribe();
       }
     };
-  }, [user]);
-  
+  }, [user]); // If user changes, rerun the effect.
   
   if (loading) {
     return <ActivityIndicator animating={true} color="#00f0ff" />;
@@ -102,6 +104,7 @@ const ProfileScreen = ({ navigation }) => {
     </KeyboardAvoidingView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
