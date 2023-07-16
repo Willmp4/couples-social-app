@@ -23,32 +23,37 @@ const ProfileScreen = ({ navigation }) => {
   const { user, loading } = useAuth()
 
   useEffect(() => {
+    let unsubscribe;
     const fetchUserDetails = async () => {
       try {
         if (user) {
           const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-            setUserDetails(userData);
-            setFirstName(userData.firstName);
-            setLastName(userData.lastName);
-            setUsername(userData.username);
-            setPartner(userData.partner);
-            setProfilePicture(userData.profilePicture);
-            setIsNewUser(false);
-          } else {
-            setIsNewUser(true);
-          }
+          unsubscribe = onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists() && user) {
+              const userData = docSnap.data();
+              setUserDetails(userData);
+              setFirstName(userData.firstName);
+              setLastName(userData.lastName);
+              setUsername(userData.username);
+              setPartner(userData.partner);
+              setProfilePicture(userData.profilePicture);
+            }
+          });
         }
       } catch (error) {
         console.error("Error fetching user details:", error);
       }
     };
-
+  
     fetchUserDetails();
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [user]);
-
+  
+  
   if (loading) {
     return <ActivityIndicator animating={true} color="#00f0ff" />;
   }
@@ -57,7 +62,6 @@ const ProfileScreen = ({ navigation }) => {
     return <Login />;
   }
 
-  // Submit the image to Firebase Storage with lots of error handling
   const Submit = async () => {
     try {
       const userId = auth.currentUser.uid;

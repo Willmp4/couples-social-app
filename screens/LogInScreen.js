@@ -37,7 +37,7 @@ export default function Login() {
         if (docSnap.exists() && docSnap.data().isNewUser) {
           navigation.navigate("SignUp");
         } else {
-          navigation.navigate("Home");
+          navigation.navigate('MyTabs', {screen: 'Home'})
         }
       })
       .catch((error) => {

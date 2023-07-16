@@ -10,13 +10,14 @@ import LogIn from "./screens/LogInScreen";
 import SignUp from "./screens/SignUpScreen";
 import ForgotPassword from "./screens/ForgotPasswordScreen";
 import MyPostsScreen from "./screens/MyPostsScreen";
-import { ActivityIndicator } from "react-native-paper";
-import { auth } from "./utils/Firebase";
 import CouplesDashBoard from "./screens/CouplesDashboardScreen";
 import Toast from 'react-native-toast-message'
+import Logout from "./components/Logout";
+import useAuth from "./hooks/useAuth";
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+const AuthStack = createStackNavigator();
+const AppStack = createStackNavigator();
 
 function MyTabs({ navigation }) {
   return (
@@ -54,39 +55,26 @@ function MyTabs({ navigation }) {
 }
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) {
-    return <ActivityIndicator animating={true} color="#00f0ff" />;
-  }
+  const { user, loading } = useAuth()
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
-          <>
-            <Stack.Screen name="MyTabs" component={MyTabs} initialParams={{ screen: "Home" }} />
-            <Stack.Screen name="MyProfile" component={ProfileScreen} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="LogIn" component={LogIn} />
-            <Stack.Screen name="SignUp" component={SignUp} />
-            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-          </>
-        )}
-      </Stack.Navigator>
-      <Toast/>
+      {user ? (
+        <AppStack.Navigator screenOptions={{ headerShown: false }}>
+          <AppStack.Screen name="MyTabs" component={MyTabs} />
+          <AppStack.Screen name="MyProfile" component={ProfileScreen} />
+          <AppStack.Screen name="Logout" component={Logout} />
+        </AppStack.Navigator>
+      ) : (
+        <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+          <AuthStack.Screen name="LogIn" component={LogIn} />
+          <AuthStack.Screen name="SignUp" component={SignUp} />
+          <AuthStack.Screen name="ForgotPassword" component={ForgotPassword} />
+        </AuthStack.Navigator>
+      )}
+      <Toast />
     </NavigationContainer>
   );
 }
+
+
