@@ -11,7 +11,7 @@ function useFetchPosts(uid, partnerRequired = true) {
   const fetchPosts = useCallback(async () => {
     let isCancelled = false;
 
-    user = auth.currentUser;
+    const user = auth.currentUser;
 
     try {
       setRefreshing(true);
@@ -41,8 +41,11 @@ function useFetchPosts(uid, partnerRequired = true) {
         }
       }
 
+      let allPosts = [...userPosts, ...partnerPosts];
+      allPosts.sort((a, b) => b.created_at - a.created_at);
+
       if (!isCancelled) {
-        setPosts([...userPosts, ...partnerPosts]);
+        setPosts(allPosts);
       }
     } catch (error) {
       console.error("Error fetching posts: ", error);
