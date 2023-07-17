@@ -8,7 +8,7 @@ export default function Blog() {
   const { posts, refreshing, fetchPosts } = useFetchPosts(auth.currentUser.uid, true);
 
   return (
-    <View style={{ paddingTop: 15 }}>
+    <View style>
       <FlatList
         contentContainerStyle={{ paddingBottom: 100 }}
         style={styles.list}
