@@ -6,11 +6,10 @@ import { auth, db } from "../utils/Firebase";
 import Login from "./LogInScreen";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Button } from "react-native-elements";
-import {uploadImageToFirebase } from "../utils/firebaseUtil";
+import { uploadImageToFirebase } from "../utils/firebaseUtil";
 import Logout from "../components/Logout";
 import ProfilePicture from "../components/ProfilePicture";
 import useAuth from "../hooks/useAuth";
-
 
 const ProfileScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
@@ -20,7 +19,7 @@ const ProfileScreen = ({ navigation }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [username, setUsername] = useState("");
   const [partner, setPartner] = useState("");
-  const { user, loading } = useAuth()
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     let unsubscribe;
@@ -30,7 +29,8 @@ const ProfileScreen = ({ navigation }) => {
         if (user) {
           const docRef = doc(db, "users", user.uid);
           unsubscribe = onSnapshot(docRef, (docSnap) => {
-            if (docSnap.exists() && user) {
+            // Additional check if the user is still logged in
+            if (docSnap.exists() && user && auth.currentUser) {
               const userData = docSnap.data();
               setUserDetails(userData);
               setFirstName(userData.firstName);
@@ -48,14 +48,14 @@ const ProfileScreen = ({ navigation }) => {
 
     fetchUserDetails();
 
-    // This is the cleanup function that will be executed when the component unmounts.
     return () => {
       if (unsubscribe) {
+        console.log("Unsubscribing from user details");
         unsubscribe();
       }
     };
-  }, [user]); // If user changes, rerun the effect.
-  
+  }, [user]);
+
   if (loading) {
     return <ActivityIndicator animating={true} color="#00f0ff" />;
   }
@@ -104,7 +104,6 @@ const ProfileScreen = ({ navigation }) => {
     </KeyboardAvoidingView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

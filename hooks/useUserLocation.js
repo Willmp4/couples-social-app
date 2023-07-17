@@ -37,18 +37,18 @@ const useUserLocation = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      const userRef = doc(db, "users", auth.currentUser.uid);
-      const userSnap = await getDoc(userRef);
-      const userData = userSnap.data() || {};
-
-      if (userData.country && userData.userTimezone) {
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    const unsubscribe = userRef.onSnapshot((doc) => {
+      const userData = doc.data();
+      if (userData) {
         setCountry(userData.country);
         setTimezone(userData.userTimezone);
-      } else {
-        await updateLocationData();
       }
-    })();
+    });
+
+    return () => {
+      unsubscribe(); // Cleanup function to unsubscribe
+    };
   }, []);
 
   // Periodic check for location change, e.g., every 15 minutes

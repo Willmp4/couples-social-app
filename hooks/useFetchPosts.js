@@ -9,8 +9,6 @@ function useFetchPosts(uid, partnerRequired = true) {
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchPosts = useCallback(async () => {
-    let isCancelled = false;
-
     const user = auth.currentUser;
 
     try {
@@ -44,25 +42,23 @@ function useFetchPosts(uid, partnerRequired = true) {
       let allPosts = [...userPosts, ...partnerPosts];
       allPosts.sort((a, b) => b.created_at - a.created_at);
 
-      if (!isCancelled) {
-        setPosts(allPosts);
-      }
+      setPosts(allPosts);
     } catch (error) {
       console.error("Error fetching posts: ", error);
     } finally {
-      if (!isCancelled) {
-        setRefreshing(false);
-      }
+      setRefreshing(false);
     }
-
-    return () => {
-      isCancelled = true;
-    };
   }, [uid, partnerRequired]);
 
   useEffect(() => {
+    let isCancelled = false;
+
     fetchPosts();
-    return fetchPosts; // This is the clean-up function.
+
+    // This is the cleanup function.
+    return () => {
+      isCancelled = true;
+    };
   }, [fetchPosts]);
 
   return { posts, refreshing, fetchPosts };
