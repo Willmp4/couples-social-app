@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import * as Location from "expo-location";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { getCountryFromCoordinates, getTimezoneFromCoordinates } from "../utils/getLocation";
 import { auth, db } from "../utils/Firebase";
 
@@ -38,7 +38,7 @@ const useUserLocation = () => {
 
   useEffect(() => {
     const userRef = doc(db, "users", auth.currentUser.uid);
-    const unsubscribe = userRef.onSnapshot((doc) => {
+    const unsubscribe = onSnapshot(userRef, (doc) => {
       const userData = doc.data();
       if (userData) {
         setCountry(userData.country);

@@ -37,6 +37,7 @@ const OurTime = () => {
       <Text style={styles.title}>Our Time</Text>
       <Text style={styles.title}>Country: {country}</Text>
       <Text style={styles.title}>Current Time: {currentTime}</Text>
+      <Text style={styles.title}>Partner TimeZone: {partnerTimezone}</Text>
       <Text style={styles.title}>Partner Time: {partnerTime}</Text>
     </View>
   );
