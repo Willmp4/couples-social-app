@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button, TextInput, View, Alert, Text, StyleSheet } from "react-native";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth, db } from "../utils/Firebase";
+import { auth, db } from "../../utils/Firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function SignUp() {

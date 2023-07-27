@@ -1,12 +1,12 @@
 // OurTime.js
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { auth, db } from "../utils/Firebase";
+import { auth, db } from "../../utils/Firebase";
 import { collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
-import useUserLocation from '../hooks/useUserLocation';
-import useUserTimezone from '../hooks/useUserTimeZone';
-import useAuth from "../hooks/useAuth";
-import usePartnerTimezone from '../hooks/usePartnerTimeZone';
+import useUserLocation from '../../hooks/useUserLocation';
+import useUserTimezone from '../../hooks/useUserTimeZone';
+import useAuth from "../../hooks/useAuth";
+import usePartnerTimezone from '../../hooks/usePartnerTimeZone';
 
 const OurTime = () => {
   const { user, loading } = useAuth();

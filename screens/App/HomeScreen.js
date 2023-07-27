@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Dimensions, Alert } from "react-native";
-import { auth, db } from "../utils/Firebase";
+import { auth, db } from "../../utils/Firebase";
 import { collection, query, getDocs, where, doc as docRef, deleteDoc, orderBy, onSnapshot } from "firebase/firestore";
-import useAuth from "../hooks/useAuth";
-import HighlightsCarousel from "../components/HighlightsCarousel";
-import styles from "../styles/Home.styles";
+import useAuth from "../../hooks/useAuth";
+import HighlightsCarousel from "../../components/HighlightsCarousel";
+import styles from "../../styles/Home.styles";
 
 const { width } = Dimensions.get("window");
 const AUTO_SCROLL_INTERVAL = 4000;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { View, TextInput, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
 import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../utils/Firebase";
-import styles from "../styles/Login.styles";
+import { auth } from "../../utils/Firebase";
+import styles from "../../styles/Login.styles";
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
 

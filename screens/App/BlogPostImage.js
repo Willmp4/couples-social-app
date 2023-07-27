@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button, View } from "react-native";
 import Dialog from "react-native-dialog";
-import { addPostToFirestore, uploadImageToFirebase } from "../utils/firebaseUtil";
-import useImagePicker from "../hooks/useImagePicker";
+import { addPostToFirestore, uploadImageToFirebase } from "../../utils/firebaseUtil";
+import useImagePicker from "../../hooks/useImagePicker";
 
 export default function BlogPostImage() {
   const [dialogVisible, setDialogVisible] = useState(false);

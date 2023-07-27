@@ -1,9 +1,9 @@
 import React from "react";
 import { FlatList, View } from "react-native";
 import { StyleSheet } from "react-native";
-import { auth } from "../utils/Firebase";
-import Post from "../components/Post";
-import useFetchPosts from "../hooks/useFetchPosts";
+import { auth } from "../../utils/Firebase";
+import Post from "../../components/Post";
+import useFetchPosts from "../../hooks/useFetchPosts";
 export default function Blog() {
   const { posts, refreshing, fetchPosts } = useFetchPosts(auth.currentUser.uid, true);
 

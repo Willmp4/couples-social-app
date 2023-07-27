@@ -2,13 +2,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import { FlatList, View, Button } from "react-native";
 import { StyleSheet } from "react-native";
 
-import { auth } from "../utils/Firebase";
-import Post from "../components/Post";
+import { auth } from "../../utils/Firebase";
+import Post from "../../components/Post";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import ProfileScreen from "./ProfileScreen";
-import useFetchPosts from "../hooks/useFetchPosts";
-import useDeletePost from "../hooks/useDeletePost";
+import useFetchPosts from "../../hooks/useFetchPosts";
+import useDeletePost from "../../hooks/useDeletePost";
 import { useFocusEffect } from "@react-navigation/native";
 
 // // Create a Drawer Navigator

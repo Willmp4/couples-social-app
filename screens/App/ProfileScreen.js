@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Text, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { Input } from "react-native-elements";
 import { doc, setDoc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
-import { auth, db } from "../utils/Firebase";
-import Login from "./LogInScreen";
+import { auth, db } from "../../utils/Firebase";
+import Login from "../Auth/LogInScreen";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Button } from "react-native-elements";
-import { uploadImageToFirebase } from "../utils/firebaseUtil";
-import Logout from "../components/Logout";
-import ProfilePicture from "../components/ProfilePicture";
-import useAuth from "../hooks/useAuth";
+import { uploadImageToFirebase } from "../../utils/firebaseUtil";
+import Logout from "../../components/Logout";
+import ProfilePicture from "../../components/ProfilePicture";
+import useAuth from "../../hooks/useAuth";
 
 const ProfileScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");

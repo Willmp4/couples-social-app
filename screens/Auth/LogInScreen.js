@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Keyboard, KeyboardAvoidingView, ImageBackground, Image, StyleSheet, View, TextInput, Text, TouchableOpacity, Alert, Platform } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../utils/Firebase";
+import { auth, db } from "../../utils/Firebase";
 import { useNavigation } from "@react-navigation/native";
 import { doc, getDoc } from "firebase/firestore";
-import styles from "../styles/Login.styles"
+import styles from "../../styles/Login.styles"
 
 export default function Login() {
   const navigation = useNavigation();
@@ -53,7 +53,7 @@ export default function Login() {
     >
       <ImageBackground style={styles.backgroundImage}>
         <View style={styles.logoContainer}>
-          <Image source={require('../assets/favicon.png')} style={styles.logo} />
+          <Image source={require('../../assets/favicon.png')} style={styles.logo} />
         </View>
         <View style={styles.container}>
           <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} placeholderTextColor="#000" />
