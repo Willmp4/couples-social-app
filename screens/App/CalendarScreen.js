@@ -34,7 +34,7 @@ export default function CalendarScreen() {
     }
   };
 
-  const createOrUpdateCountdown = async () => {
+  const createOrUpdateCountdown = async (countdownDate) => {
     if (isLongDistance) {
       // Check if it's a long-distance relationship
       const partnerUsername = await getPartnerUsername(auth.currentUser.uid);
@@ -42,7 +42,7 @@ export default function CalendarScreen() {
       const countdownRef = doc(db, "countdowns", coupleID);
 
       await setDoc(countdownRef, {
-        endDate: countdownEnd,
+        endDate: countdownDate, // Use the countdownDate variable
         userId1: auth.currentUser.uid,
         userId2: partnerUsername,
       });
@@ -88,7 +88,7 @@ export default function CalendarScreen() {
 
   const startCountdown = async () => {
     if (isLongDistance) {
-      let countdownDate = countdownEnd || {
+      let countdownDate = {
         year: parseInt(selectedDate.slice(0, 4)),
         month: parseInt(selectedDate.slice(5, 7)),
         day: parseInt(selectedDate.slice(8, 10)),
