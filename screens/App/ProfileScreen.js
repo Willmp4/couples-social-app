@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Text, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 import { Input } from "react-native-elements";
 import { doc, setDoc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../../utils/Firebase";
 import Login from "../Auth/LogInScreen";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Button } from "react-native-elements";
-import { uploadImageToFirebase } from "../../utils/firebaseUtil";
+import { uploadImageToFirebase } from "../../services/firebaseFunctions";
 import Logout from "../../components/Logout";
 import ProfilePicture from "../../components/ProfilePicture";
 import useAuth from "../../hooks/useAuth";
@@ -20,7 +21,7 @@ const ProfileScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [partner, setPartner] = useState("");
   const { user, loading } = useAuth();
-
+  const [relationshipStatus, setRelationshipStatus] = useState("");
   useEffect(() => {
     let unsubscribe;
 
@@ -75,6 +76,7 @@ const ProfileScreen = ({ navigation }) => {
         profilePicture: profilePictureUrl,
         username,
         partner,
+        relationshipStatus,
       };
 
       const docRef = doc(db, "users", userId);
@@ -98,12 +100,47 @@ const ProfileScreen = ({ navigation }) => {
         <Input label="Username" placeholder="Username" value={username} onChangeText={setUsername} inputContainerStyle={styles.input} />
         <Input label="Partner" placeholder="Partner" value={partner} onChangeText={setPartner} inputContainerStyle={styles.input} />
         <ProfilePicture profilePicture={profilePicture} setProfilePicture={setProfilePicture} />
+        <Text style={styles.label}>Relationship Status</Text>
+        <RNPickerSelect
+          onValueChange={(value) => setRelationshipStatus(value)}
+          items={[
+            { label: "Long Distance", value: "Long Distance" },
+            { label: "living together", value: "living together" },
+            { label: "Married", value: "Married" },
+            // ... other options
+          ]}
+          style={pickerStyles} // You will need to define this style
+          value={relationshipStatus}
+        />
         <Button icon={<Icon name="upload" size={20} color="white" />} title="Update" onPress={Submit} buttonStyle={styles.button} />
         <Logout />
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
+
+const pickerStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 4,
+    color: "black",
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: "gray",
+    borderRadius: 8,
+    color: "black",
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+});
 
 const styles = StyleSheet.create({
   container: {

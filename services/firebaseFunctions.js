@@ -1,6 +1,6 @@
 import { collection, addDoc, serverTimestamp, getFirestore } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { db, storage, auth } from "./Firebase";
+import { db, storage, auth } from "../utils/Firebase";
 
 export const uploadImageToFirebase = async (imageUri, folder) => {
   // Generate a unique filename based on timestamp
@@ -29,5 +29,34 @@ export const addPostToFirestore = async (title, content, imageURL) => {
       uid: user.uid,
       username: user.displayName,
     });
+  }
+};
+export const saveRelationshipStatus = async (userId, status) => {
+  try {
+    // Reference to the specific user's document
+    const userRef = doc(db, "users", userId);
+
+    // Update the relationship status for the user
+    await updateDoc(userRef, {
+      relationshipStatus: status,
+    });
+  } catch (error) {
+    console.error("Error saving relationship status:", error);
+  }
+};
+
+export const getRelationshipStatus = async (userId) => {
+  try {
+    // Reference to the specific user's document
+    const userRef = doc(db, "users", userId);
+
+    // Fetch the document
+    const userDoc = await getDoc(userRef);
+
+    // Retrieve and return the relationship status
+    return userDoc.exists() ? userDoc.data().relationshipStatus : null;
+  } catch (error) {
+    console.error("Error fetching relationship status:", error);
+    return null;
   }
 };

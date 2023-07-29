@@ -11,7 +11,7 @@ import usePartnerTimezone from '../../hooks/usePartnerTimeZone';
 const OurTime = () => {
   const { user, loading } = useAuth();
   const [partner, setPartner] = useState("");
-  
+  const [relationshipStatus, setRelationshipStatus] = useState(null); // Add this line
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -21,6 +21,7 @@ const OurTime = () => {
         if (docSnap.exists()) {
           const userData = docSnap.data();
           setPartner(userData.partner);
+          setRelationshipStatus(userData.relationshipStatus); // Add this line
         }
       }
     };
@@ -32,16 +33,22 @@ const OurTime = () => {
   const currentTime = useUserTimezone(timezone);
   const { partnerTimezone, partnerTime } = usePartnerTimezone(partner);
 
+  // Modify the return statement to conditionally render based on relationshipStatus
   return (
     <View>
-      <Text style={styles.title}>Our Time</Text>
-      <Text style={styles.title}>Country: {country}</Text>
-      <Text style={styles.title}>Current Time: {currentTime}</Text>
-      <Text style={styles.title}>Partner TimeZone: {partnerTimezone}</Text>
-      <Text style={styles.title}>Partner Time: {partnerTime}</Text>
+      {relationshipStatus === "Longdistant" && (
+        <>
+          <Text style={styles.title}>Our Time</Text>
+          <Text style={styles.title}>Country: {country}</Text>
+          <Text style={styles.title}>Current Time: {currentTime}</Text>
+          <Text style={styles.title}>Partner TimeZone: {partnerTimezone}</Text>
+          <Text style={styles.title}>Partner Time: {partnerTime}</Text>
+        </>
+      )}
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

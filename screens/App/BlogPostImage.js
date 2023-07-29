@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, View } from "react-native";
 import Dialog from "react-native-dialog";
-import { addPostToFirestore, uploadImageToFirebase } from "../../utils/firebaseUtil";
+import { addPostToFirestore, uploadImageToFirebase } from "../../services/firebaseFunctions";
 import useImagePicker from "../../hooks/useImagePicker";
 
 export default function BlogPostImage() {
