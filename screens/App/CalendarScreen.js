@@ -6,7 +6,7 @@ import { Dialog } from "react-native-simple-dialogs";
 import CountdownComponent from "../../components/CountdownComponent";
 import getPartnerUsername from "../../utils/getPartnerUsername";
 import { db, auth } from "../../utils/Firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, query, collection, where, getDocs } from "firebase/firestore";
 
 export default function CalendarScreen() {
   const [events, setEvents] = useState([]);
@@ -21,6 +21,7 @@ export default function CalendarScreen() {
   const [isLongDistance, setIsLongDistance] = useState(false); // for tracking the relationship status
 
   useEffect(() => {
+    fetchEvents();
     checkLongDistance();
   }, []);
 
@@ -38,7 +39,16 @@ export default function CalendarScreen() {
     if (isLongDistance) {
       // Check if it's a long-distance relationship
       const partnerUsername = await getPartnerUsername(auth.currentUser.uid);
-      const coupleID = getCoupleID(auth.currentUser.uid, partnerUsername);
+      let partnerUid = null;
+      if (partnerUsername) {
+        const usernameRef = doc(db, "usernames", partnerUsername);
+        const usernameSnap = await getDoc(usernameRef);
+
+        partnerUid = usernameSnap.data().uid;
+        // Now you can continue using partnerUid as needed
+      }
+
+      const coupleID = getCoupleID(auth.currentUser.uid, partnerUid);
       const countdownRef = doc(db, "countdowns", coupleID);
 
       await setDoc(countdownRef, {
@@ -51,14 +61,22 @@ export default function CalendarScreen() {
 
   const fetchCountdownEndDate = async () => {
     const partnerUsername = await getPartnerUsername(auth.currentUser.uid);
-    const coupleID = getCoupleID(auth.currentUser.uid, partnerUsername);
+    let partnerUid = null;
+    if (partnerUsername) {
+      const usernameRef = doc(db, "usernames", partnerUsername);
+      const usernameSnap = await getDoc(usernameRef);
+
+      partnerUid = usernameSnap.data().uid;
+      // Now you can continue using partnerUid as needed
+    }
+
+    const coupleID = getCoupleID(auth.currentUser.uid, partnerUid);
     const countdownRef = doc(db, "countdowns", coupleID);
     const countdownSnap = await getDoc(countdownRef);
 
     if (countdownSnap.exists()) {
       const countdownData = countdownSnap.data();
       setCountdownEnd(countdownData.endDate);
-      console.log(countdownData.endDate);
       // Initialize countdown here
       if (countdownData.endDate && isLongDistance) {
         setIsCountdownVisible(true);
@@ -147,7 +165,6 @@ export default function CalendarScreen() {
     setIsLongDistance(isLongDistanceRelationship);
 
     if (isLongDistanceRelationship) {
-      console.log("Longdistant");
       // Fetch countdown end date if it's a long-distance relationship
       await fetchCountdownEndDate();
     }
