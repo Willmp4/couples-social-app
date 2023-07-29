@@ -1,5 +1,6 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../utils/Firebase";
+
 async function getPartnerUsername(uid) {
   try {
     // Get the user's document
