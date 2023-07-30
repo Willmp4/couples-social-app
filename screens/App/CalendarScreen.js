@@ -4,20 +4,23 @@ import { Calendar } from "react-native-calendars";
 import EventList from "../../components/CalendarComponents/EventListComponent";
 import EventDialog from "../../components/CalendarComponents/EventDialogsComponent";
 import CountdownComponent from "../../components/CalendarComponents/CountdownComponent";
-import useCountdown from "../../hooks/useCountdown";
-import useRelationshipStatus from "../../hooks/useRelationshipStatus";
+import { useCountdown } from "../../hooks/useCountdown";
+import { useRelationshipStatus } from "../../hooks/useRelationshipStatus";
+import { db, auth } from "../../utils/Firebase";
 import { createEvent, readEvents, updateEvent, deleteEvent } from "../../services/calendar";
 
 export default function CalendarScreen() {
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [newEventTitle, setNewEventTitle] = useState("");
+
   const [updatedEventTitle, setUpdatedEventTitle] = useState("");
   const [dialogVisible, setDialogVisible] = useState(false);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
-  const { coundownTime, isCountdownVisible, initializeCountdown } = useCountdown();
-  const relationshipStatus = useRelationshipStatus();
+  const { countdownTime, initializeCountdown, isCountdownVisible } = useCountdown(db, auth);
+
+  const { relationshipStatus } = useRelationshipStatus();
 
   useEffect(() => {
     fetchEvents();
@@ -46,12 +49,20 @@ export default function CalendarScreen() {
     }
   };
 
+  const onStartCountdownPress = () => {
+    const dateParts = selectedDate.split("-");
+    const selectedEndDate = {
+      year: parseInt(dateParts[0], 10),
+      month: parseInt(dateParts[1], 10),
+      day: parseInt(dateParts[2], 10),
+    };
+    initializeCountdown(selectedEndDate);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
-      {isCountdownVisible && relationshipStatus === "Longdistant" && (
-        <CountdownComponent until={countdownEnd} onFinish={initializeCountdown} />
-      )}
+      {<CountdownComponent until={countdownTime} onFinish={initializeCountdown} />}
 
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={(day) => setSelectedDate(day.dateString)} />
@@ -95,7 +106,6 @@ export default function CalendarScreen() {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

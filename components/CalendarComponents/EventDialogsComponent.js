@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TextInput, Button, StyleSheet } from "react-native";
+import { View, TextInput, Button, StyleSheet, Text } from "react-native";
 import { Dialog } from "react-native-simple-dialogs";
 
 export default function EventDialog({ visible, onClose, title, value, placeholder, onChange, onSave }) {
