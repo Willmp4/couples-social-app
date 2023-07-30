@@ -63,7 +63,7 @@ export default function CalendarScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
-      {<CountdownComponent until={countdownTime} onFinish={initializeCountdown} />}
+      {isCountdownVisible && countdownTime > 0 && <CountdownComponent until={countdownTime} onFinish={initializeCountdown} />}
 
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={(day) => setSelectedDate(day.dateString)} />

@@ -50,31 +50,28 @@ export const useCountdown = (db, auth) => {
   };
 
   const initializeCountdown = (newEndDate) => {
-    setCountdownEnd(newEndDate); // Set end date in state
+    setCountdownEnd(newEndDate);
     setIsCountdownVisible(true);
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    intervalRef.current = setInterval(calculateCountdown, 1000);
+    setCountdownTime(0);
   };
 
   useEffect(() => {
     fetchCountdownEndDate();
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [relationshipStatus]); // Only depending on relationshipStatus here
+  }, [relationshipStatus]);
 
   useEffect(() => {
     if (countdownEnd) {
+      console.log("Countdown end date: ", countdownEnd);
+
+      // Clear the existing interval if there is one
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+
+      // Set a new interval
       intervalRef.current = setInterval(calculateCountdown, 1000);
 
+      // Return a cleanup function that clears the interval
       return () => {
         if (intervalRef.current) {
           clearInterval(intervalRef.current);
