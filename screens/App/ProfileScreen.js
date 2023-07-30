@@ -104,10 +104,9 @@ const ProfileScreen = ({ navigation }) => {
         <RNPickerSelect
           onValueChange={(value) => setRelationshipStatus(value)}
           items={[
-            { label: "Long Distance", value: "Long Distance" },
+            { label: "Long Distance", value: "LongDistance" },
             { label: "living together", value: "living together" },
             { label: "Married", value: "Married" },
-            // ... other options
           ]}
           style={pickerStyles} // You will need to define this style
           value={relationshipStatus}

@@ -28,8 +28,7 @@ export const useCountdown = (db, auth) => {
   };
 
   const fetchCountdownEndDate = async () => {
-    if (relationshipStatus === "Longdistant") {
-      // Consider fixing this typo
+    if (relationshipStatus === "LongDistance") {
       const partnerUsername = await getPartnerUsername(auth.currentUser.uid);
       let partnerUid = null;
       if (partnerUsername) {
@@ -63,11 +62,6 @@ export const useCountdown = (db, auth) => {
     if (countdownEnd) {
       console.log("Countdown end date: ", countdownEnd);
 
-      // Clear the existing interval if there is one
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-
       // Set a new interval
       intervalRef.current = setInterval(calculateCountdown, 1000);
 
@@ -78,7 +72,7 @@ export const useCountdown = (db, auth) => {
         }
       };
     }
-  }, [countdownEnd]);
+  }, [countdownEnd]); // Only re-run the effect if countdownEnd changes
 
   return {
     countdownTime,

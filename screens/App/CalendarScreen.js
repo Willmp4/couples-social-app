@@ -64,11 +64,10 @@ export default function CalendarScreen() {
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
       {isCountdownVisible && countdownTime > 0 && <CountdownComponent until={countdownTime} onFinish={initializeCountdown} />}
-
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={(day) => setSelectedDate(day.dateString)} />
       </View>
-      {relationshipStatus === "Longdistant" && <Button title="Start Countdown" onPress={() => onStartCountdownPress(selectedDate)} />}
+      {relationshipStatus === "LongDistance" && <Button title="Start Countdown" onPress={() => onStartCountdownPress(selectedDate)} />}
       {selectedDate && (
         <TouchableOpacity style={styles.addButton} onPress={() => setDialogVisible(true)}>
           <Text style={styles.addButtonText}>Create Event</Text>
