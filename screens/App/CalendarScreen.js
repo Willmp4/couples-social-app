@@ -52,6 +52,7 @@ export default function CalendarScreen() {
   const onStartCountdownPress = () => {
     const dateParts = selectedDate.split("-");
     const selectedEndDate = {
+      // Note the addition of the 'endDate' property here
       year: parseInt(dateParts[0], 10),
       month: parseInt(dateParts[1], 10),
       day: parseInt(dateParts[2], 10),
@@ -67,7 +68,7 @@ export default function CalendarScreen() {
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={(day) => setSelectedDate(day.dateString)} />
       </View>
-      {relationshipStatus === "Longdistant" && <Button title="Start Countdown" onPress={() => initializeCountdown(selectedDate)} />}
+      {relationshipStatus === "Longdistant" && <Button title="Start Countdown" onPress={() => onStartCountdownPress(selectedDate)} />}
       {selectedDate && (
         <TouchableOpacity style={styles.addButton} onPress={() => setDialogVisible(true)}>
           <Text style={styles.addButtonText}>Create Event</Text>

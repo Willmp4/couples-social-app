@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import getPartnerUsername from "../utils/getPartnerUsername";
 import { useRelationshipStatus } from "./useRelationshipStatus";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+
 export const useCountdown = (db, auth) => {
   const [countdownEnd, setCountdownEnd] = useState(null);
   const [countdownTime, setCountdownTime] = useState(0);
   const [isCountdownVisible, setIsCountdownVisible] = useState(false);
+  const intervalRef = useRef(null);
 
   const { relationshipStatus } = useRelationshipStatus();
 
@@ -13,9 +15,17 @@ export const useCountdown = (db, auth) => {
     return [uid1, uid2].sort().join("_");
   };
 
-  useEffect(() => {
-    fetchCountdownEndDate();
-  }, [relationshipStatus]);
+  const calculateCountdown = () => {
+    if (countdownEnd) {
+      const endDate = new Date(countdownEnd.year, countdownEnd.month - 1, countdownEnd.day);
+      const diff = Math.floor((endDate.getTime() - new Date().getTime()) / 1000);
+      setCountdownTime(diff > 0 ? diff : 0);
+
+      if (diff <= 0) {
+        setIsCountdownVisible(false);
+      }
+    }
+  };
 
   const fetchCountdownEndDate = async () => {
     if (relationshipStatus === "Longdistant") {
@@ -25,7 +35,6 @@ export const useCountdown = (db, auth) => {
       if (partnerUsername) {
         const usernameRef = doc(db, "usernames", partnerUsername);
         const usernameSnap = await getDoc(usernameRef);
-
         partnerUid = usernameSnap.data().uid;
       }
 
@@ -40,47 +49,37 @@ export const useCountdown = (db, auth) => {
     }
   };
 
-  const setCountdownEndDate = async (endDate) => {
-    const partnerUsername = await getPartnerUsername(auth.currentUser.uid);
-    let partnerUid = null;
-    if (partnerUsername) {
-      const usernameRef = doc(db, "usernames", partnerUsername);
-      const usernameSnap = await getDoc(usernameRef);
-      partnerUid = usernameSnap.data().uid;
-    }
-  
-    const coupleID = getCoupleID(auth.currentUser.uid, partnerUid);
-    const countdownRef = doc(db, "countdowns", coupleID);
-  
-    await setDoc(countdownRef, { endDate });
-  };
-
-  
-  
-
   const initializeCountdown = (newEndDate) => {
-    setCountdownEndDate(newEndDate); // Save to the database
+    setCountdownEnd(newEndDate); // Set end date in state
     setIsCountdownVisible(true);
-    setCountdownEnd(newEndDate);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    intervalRef.current = setInterval(calculateCountdown, 1000);
   };
-  
+
+  useEffect(() => {
+    fetchCountdownEndDate();
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [relationshipStatus]); // Only depending on relationshipStatus here
+
   useEffect(() => {
     if (countdownEnd) {
-      const calculateCountdown = () => {
-        const endDate = new Date(countdownEnd.year, countdownEnd.month - 1, countdownEnd.day);
-        const diff = Math.floor((endDate.getTime() - new Date().getTime()) / 1000);
-        setCountdownTime(diff > 0 ? diff : 0);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      intervalRef.current = setInterval(calculateCountdown, 1000);
 
-        if (diff <= 0) {
-          setIsCountdownVisible(false);
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
         }
       };
-      calculateCountdown();
-      // Set an interval to update the countdown every second
-      const intervalId = setInterval(calculateCountdown, 1000);
-
-      // Clear the interval when the component is unmounted
-      return () => clearInterval(intervalId);
     }
   }, [countdownEnd]);
 
