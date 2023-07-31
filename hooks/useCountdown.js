@@ -1,33 +1,23 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import getPartnerUsername from "../utils/getPartnerUsername";
+import { doc, getDoc } from "firebase/firestore";
+import { db, auth } from "../utils/Firebase";
 import { useRelationshipStatus } from "./useRelationshipStatus";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { setDoc } from "firebase/firestore";
 
-export const useCountdown = (db, auth) => {
+export const useCountdownData = () => {
+  console.log("useCountdownData");
+  const [isLoading, setIsLoading] = useState(true);
   const [countdownEnd, setCountdownEnd] = useState(null);
-  const [countdownTime, setCountdownTime] = useState(0);
-  const [isCountdownVisible, setIsCountdownVisible] = useState(false);
-  const intervalRef = useRef(null);
 
   const { relationshipStatus } = useRelationshipStatus();
+  console.log(relationshipStatus);
 
   const getCoupleID = (uid1, uid2) => {
     return [uid1, uid2].sort().join("_");
   };
 
-  const calculateCountdown = () => {
-    if (countdownEnd) {
-      const endDate = new Date(countdownEnd.year, countdownEnd.month - 1, countdownEnd.day);
-      const diff = Math.floor((endDate.getTime() - new Date().getTime()) / 1000);
-      setCountdownTime(diff > 0 ? diff : 0);
-
-      if (diff <= 0) {
-        setIsCountdownVisible(false);
-      }
-    }
-  };
-
-  const fetchCountdownEndDate = async () => {
+  const updateCountdownDate = async (countdownDate) => {
     if (relationshipStatus === "LongDistance") {
       const partnerUsername = await getPartnerUsername(auth.currentUser.uid);
       let partnerUid = null;
@@ -39,44 +29,46 @@ export const useCountdown = (db, auth) => {
 
       const coupleID = getCoupleID(auth.currentUser.uid, partnerUid);
       const countdownRef = doc(db, "countdowns", coupleID);
-      const countdownSnap = await getDoc(countdownRef);
 
-      if (countdownSnap.exists()) {
-        const countdownData = countdownSnap.data();
-        initializeCountdown(countdownData.endDate);
-      }
+      await setDoc(countdownRef, {
+        endDate: countdownDate,
+      });
+
+      setCountdownEnd(countdownDate);
     }
   };
 
-  const initializeCountdown = (newEndDate) => {
-    setCountdownEnd(newEndDate);
-    setIsCountdownVisible(true);
-    setCountdownTime(0);
+  const fetchCountdownEndDate = async () => {
+    const partnerUsername = await getPartnerUsername(auth.currentUser.uid);
+    let partnerUid = null;
+    if (partnerUsername) {
+      const usernameRef = doc(db, "usernames", partnerUsername);
+      const usernameSnap = await getDoc(usernameRef);
+
+      partnerUid = usernameSnap.data().uid;
+      // Now you can continue using partnerUid as needed
+    }
+
+    const coupleID = getCoupleID(auth.currentUser.uid, partnerUid);
+    const countdownRef = doc(db, "countdowns", coupleID);
+    const countdownSnap = await getDoc(countdownRef);
+
+    if (countdownSnap.exists()) {
+      const countdownData = countdownSnap.data();
+      setCountdownEnd(countdownData.endDate);
+    }
   };
 
   useEffect(() => {
-    fetchCountdownEndDate();
+    const checkLongDistance = async () => {
+      if (relationshipStatus === "LongDistance") {
+        await fetchCountdownEndDate();
+        console.log("countdownEnd", countdownEnd);
+        setIsLoading(false); // Set loading to false after fetching the data
+      }
+    };
+    checkLongDistance();
   }, [relationshipStatus]);
 
-  useEffect(() => {
-    if (countdownEnd) {
-      console.log("Countdown end date: ", countdownEnd);
-
-      // Set a new interval
-      intervalRef.current = setInterval(calculateCountdown, 1000);
-
-      // Return a cleanup function that clears the interval
-      return () => {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-      };
-    }
-  }, [countdownEnd]); // Only re-run the effect if countdownEnd changes
-
-  return {
-    countdownTime,
-    initializeCountdown,
-    isCountdownVisible,
-  };
+  return { countdownEnd, updateCountdownDate, fetchCountdownEndDate, isLoading };
 };

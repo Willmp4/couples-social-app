@@ -1,108 +1,113 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Button, StyleSheet } from "react-native";
+import { StyleSheet, View, Button, Text, TextInput, ScrollView, TouchableOpacity } from "react-native";
 import { Calendar } from "react-native-calendars";
-import EventList from "../../components/CalendarComponents/EventListComponent";
-import EventDialog from "../../components/CalendarComponents/EventDialogsComponent";
+import { Dialog } from "react-native-simple-dialogs";
 import CountdownComponent from "../../components/CalendarComponents/CountdownComponent";
-import { useCountdown } from "../../hooks/useCountdown";
+import { useEvents } from "../../hooks/useCalendarEvents";
+import { useCountdownData } from "../../hooks/useCountdown";
 import { useRelationshipStatus } from "../../hooks/useRelationshipStatus";
-import { db, auth } from "../../utils/Firebase";
-import { createEvent, readEvents, updateEvent, deleteEvent } from "../../services/calendar";
 
 export default function CalendarScreen() {
-  const [events, setEvents] = useState([]);
+  useEffect(() => {
+    // Check if countdown should be visible
+    if (isLongDistance && getCountdownTime() > 0) {
+      setIsCountdownVisible(true);
+    }
+  }, [isLongDistance, countdownEnd]); // Re-run when these values change
+
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [newEventTitle, setNewEventTitle] = useState("");
-
   const [updatedEventTitle, setUpdatedEventTitle] = useState("");
   const [dialogVisible, setDialogVisible] = useState(false);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
-  const { countdownTime, initializeCountdown, isCountdownVisible } = useCountdown(db, auth);
+  const [isCountdownVisible, setIsCountdownVisible] = useState(false);
 
+  const { events, handleCreateEvent, handleUpdateEvent, handleDeleteEvent } = useEvents();
+  const { countdownEnd, updateCountdownDate, isLoading } = useCountdownData();
   const { relationshipStatus } = useRelationshipStatus();
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
+  const isLongDistance = relationshipStatus === "LongDistance";
 
-  const fetchEvents = async () => {
-    const fetchedEvents = await readEvents();
-    setEvents(fetchedEvents);
+  const getCountdownTime = () => {
+    if (!countdownEnd) return 0;
+
+    const endDate = new Date(countdownEnd.year, countdownEnd.month - 1, countdownEnd.day);
+    const diff = Math.floor((endDate.getTime() - new Date().getTime()) / 1000);
+    return diff > 0 ? diff : 0;
   };
 
-  const handleCreateEvent = async () => {
-    if (newEventTitle !== "") {
-      await createEvent({ title: newEventTitle, date: selectedDate });
-      setNewEventTitle("");
-      fetchEvents();
-      setDialogVisible(false);
+  const handleDayPress = (day) => {
+    setSelectedDate(day.dateString);
+  };
+
+  const startCountdown = async () => {
+    if (isLongDistance) {
+      let countdownDate = {
+        year: parseInt(selectedDate.slice(0, 4)),
+        month: parseInt(selectedDate.slice(5, 7)),
+        day: parseInt(selectedDate.slice(8, 10)),
+      };
+      setIsCountdownVisible(true);
+
+      await updateCountdownDate(countdownDate); // Updating the countdown date in Firebase
     }
   };
 
-  const handleUpdateEvent = async () => {
-    if (updatedEventTitle !== "") {
-      await updateEvent(selectedEventId, { title: updatedEventTitle, date: selectedDate });
-      setUpdatedEventTitle("");
-      fetchEvents();
-      setUpdateDialogVisible(false);
-    }
+  const openDialog = () => {
+    setDialogVisible(true);
   };
 
-  const onStartCountdownPress = () => {
-    const dateParts = selectedDate.split("-");
-    const selectedEndDate = {
-      // Note the addition of the 'endDate' property here
-      year: parseInt(dateParts[0], 10),
-      month: parseInt(dateParts[1], 10),
-      day: parseInt(dateParts[2], 10),
-    };
-    initializeCountdown(selectedEndDate);
+  const openUpdateDialog = (eventId) => {
+    setSelectedEventId(eventId);
+    setUpdateDialogVisible(true);
   };
+
+  const renderEvents = () => {
+    const filteredEvents = events.filter((event) => event.date === selectedDate);
+    if (filteredEvents.length === 0) {
+      return <Text style={styles.noEventsText}>No events for today</Text>;
+    }
+
+    return filteredEvents.map((event) => (
+      <View key={event.id} style={styles.eventContainer}>
+        <Text>{event.title}</Text>
+        <Button title="Update Event" onPress={() => openUpdateDialog(event.id)} />
+        <Button title="Delete Event" onPress={() => handleDeleteEvent(event.id)} />
+      </View>
+    ));
+  };
+
+ 
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
-      {isCountdownVisible && countdownTime > 0 && <CountdownComponent until={countdownTime} onFinish={initializeCountdown} />}
+      {isLongDistance && <CountdownComponent until={getCountdownTime()} onFinish={() => setIsCountdownVisible(false)} />}
       <View style={styles.calendarContainer}>
-        <Calendar style={styles.calendar} onDayPress={(day) => setSelectedDate(day.dateString)} />
+        <Calendar style={styles.calendar} onDayPress={handleDayPress} />
       </View>
-      {relationshipStatus === "LongDistance" && <Button title="Start Countdown" onPress={() => onStartCountdownPress(selectedDate)} />}
+      <Button title="Start Countdown" onPress={startCountdown} />
       {selectedDate && (
-        <TouchableOpacity style={styles.addButton} onPress={() => setDialogVisible(true)}>
+        <TouchableOpacity style={styles.addButton} onPress={openDialog}>
           <Text style={styles.addButtonText}>Create Event</Text>
         </TouchableOpacity>
       )}
       <Text style={styles.dateHeader}>{selectedDate}</Text>
-      <ScrollView>
-        <EventList
-          events={events}
-          selectedDate={selectedDate}
-          onOpenUpdateDialog={(eventId) => {
-            setSelectedEventId(eventId);
-            setUpdateDialogVisible(true);
-          }}
-          onDeleteEvent={deleteEvent}
+      <ScrollView>{renderEvents()}</ScrollView>
+      <Dialog visible={dialogVisible} onTouchOutside={() => setDialogVisible(false)}>
+        <TextInput style={styles.input} placeholder="Enter Event Title..." value={newEventTitle} onChangeText={setNewEventTitle} />
+        <Button title="Save Event" onPress={() => handleCreateEvent(newEventTitle, selectedDate)} />
+      </Dialog>
+      <Dialog visible={updateDialogVisible} onTouchOutside={() => setUpdateDialogVisible(false)}>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter New Event Title..."
+          value={updatedEventTitle}
+          onChangeText={setUpdatedEventTitle}
         />
-      </ScrollView>
-      <EventDialog
-        visible={dialogVisible}
-        onClose={() => setDialogVisible(false)}
-        title="Create Event"
-        value={newEventTitle}
-        placeholder="Enter Event Title..."
-        onChange={setNewEventTitle}
-        onSave={handleCreateEvent}
-      />
-      <EventDialog
-        visible={updateDialogVisible}
-        onClose={() => setUpdateDialogVisible(false)}
-        title="Update Event"
-        value={updatedEventTitle}
-        placeholder="Enter New Event Title..."
-        onChange={setUpdatedEventTitle}
-        onSave={handleUpdateEvent}
-      />
+        <Button title="Update Event" onPress={() => handleUpdateEvent(selectedEventId, updatedEventTitle, selectedDate)} />
+      </Dialog>
     </View>
   );
 }
