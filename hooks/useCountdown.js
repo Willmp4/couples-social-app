@@ -64,7 +64,7 @@ export const useCountdownData = () => {
       }
     };
     checkLongDistance();
-  }, [relationshipStatus]); 
+  }, [relationshipStatus]);
 
-  return { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible};
+  return { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible };
 };

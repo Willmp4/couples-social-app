@@ -21,9 +21,6 @@ export default function CalendarScreen() {
   const { relationshipStatus } = useRelationshipStatus();
 
   const isLongDistance = relationshipStatus === "LongDistance";
-  useEffect(() => {
-    setIsCountdownVisible(true);
-  }, [countdownEnd]);
 
   const getCountdownTime = () => {
     if (!countdownEnd) return 0;
