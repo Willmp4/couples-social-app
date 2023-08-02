@@ -14,6 +14,7 @@ export default function CalendarScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
+  const [countdownTime, setCountdownTime] = useState(0);
 
   const { events, handleCreateEvent, handleUpdateEvent, handleDeleteEvent } = useEvents();
   const { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible } = useCountdownData();
@@ -41,6 +42,8 @@ export default function CalendarScreen() {
         day: parseInt(selectedDate.slice(8, 10)),
       };
       await updateCountdownDate(countdownDate); // Update countdown date
+      const diff = getCountdownTime();
+      setCountdownTime(diff);
       setIsCountdownVisible(true);
     }
   };
@@ -72,9 +75,8 @@ export default function CalendarScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
-      {isCountdownVisible && isLongDistance && (
-        <CountdownComponent until={getCountdownTime()} onFinish={() => setIsCountdownVisible(false)} />
-      )}
+      {isCountdownVisible && isLongDistance && <CountdownComponent until={countdownTime} onFinish={() => setIsCountdownVisible(false)} />}
+
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={handleDayPress} />
       </View>
