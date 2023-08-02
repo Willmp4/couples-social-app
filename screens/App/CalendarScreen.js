@@ -1,100 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Button, Text, TextInput, ScrollView, TouchableOpacity } from "react-native";
-import { createEvent, readEvents, updateEvent, deleteEvent } from "../../services/calendar";
 import { Calendar } from "react-native-calendars";
 import { Dialog } from "react-native-simple-dialogs";
-import CountdownComponent from "../../components/CountdownComponent";
-import getPartnerUsername from "../../utils/getPartnerUsername";
-import { db, auth } from "../../utils/Firebase";
-import { doc, setDoc, getDoc, query, collection, where, getDocs } from "firebase/firestore";
+import CountdownComponent from "../../components/CalendarComponents/CountdownComponent";
+import { useEvents } from "../../hooks/useCalendarEvents";
+import { useCountdownData } from "../../hooks/useCountdown";
+import { useRelationshipStatus } from "../../hooks/useRelationshipStatus";
 
 export default function CalendarScreen() {
-  const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [newEventTitle, setNewEventTitle] = useState("");
-  const [updatedEventTitle, setUpdatedEventTitle] = useState(""); // new state for the updated event title
+  const [updatedEventTitle, setUpdatedEventTitle] = useState("");
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [updateDialogVisible, setUpdateDialogVisible] = useState(false); // new state for showing or hiding the update dialog
+  const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
-  const [countdownEnd, setCountdownEnd] = useState(null); // for the countdown
-  const [isCountdownVisible, setIsCountdownVisible] = useState(false);
-  const [isLongDistance, setIsLongDistance] = useState(false); // for tracking the relationship status
+  const [countdownTime, setCountdownTime] = useState(0);
 
-  useEffect(() => {
-    fetchEvents();
-    checkLongDistance();
-  }, []);
+  const { events, handleCreateEvent, handleUpdateEvent, handleDeleteEvent } = useEvents();
+  const { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible } = useCountdownData();
 
-  useEffect(() => {
-    initializeCountdown();
-  }, [countdownEnd]);
+  const { relationshipStatus } = useRelationshipStatus();
 
-  const initializeCountdown = () => {
-    if (countdownEnd && isLongDistance) {
-      setIsCountdownVisible(true);
-    }
-  };
+  const isLongDistance = relationshipStatus === "LongDistance";
 
-  const createOrUpdateCountdown = async (countdownDate) => {
-    if (isLongDistance) {
-      // Check if it's a long-distance relationship
-      const partnerUsername = await getPartnerUsername(auth.currentUser.uid);
-      let partnerUid = null;
-      if (partnerUsername) {
-        const usernameRef = doc(db, "usernames", partnerUsername);
-        const usernameSnap = await getDoc(usernameRef);
-
-        partnerUid = usernameSnap.data().uid;
-        // Now you can continue using partnerUid as needed
-      }
-
-      const coupleID = getCoupleID(auth.currentUser.uid, partnerUid);
-      const countdownRef = doc(db, "countdowns", coupleID);
-
-      await setDoc(countdownRef, {
-        endDate: countdownDate, // Use the countdownDate variable
-        userId1: auth.currentUser.uid,
-        userId2: partnerUsername,
-      });
-    }
-  };
-
-  const fetchCountdownEndDate = async () => {
-    const partnerUsername = await getPartnerUsername(auth.currentUser.uid);
-    let partnerUid = null;
-    if (partnerUsername) {
-      const usernameRef = doc(db, "usernames", partnerUsername);
-      const usernameSnap = await getDoc(usernameRef);
-
-      partnerUid = usernameSnap.data().uid;
-      // Now you can continue using partnerUid as needed
-    }
-
-    const coupleID = getCoupleID(auth.currentUser.uid, partnerUid);
-    const countdownRef = doc(db, "countdowns", coupleID);
-    const countdownSnap = await getDoc(countdownRef);
-
-    if (countdownSnap.exists()) {
-      const countdownData = countdownSnap.data();
-      setCountdownEnd(countdownData.endDate);
-      // Initialize countdown here
-      if (countdownData.endDate && isLongDistance) {
-        setIsCountdownVisible(true);
-      }
-    }
-  };
-
-  const getCoupleID = (uid1, uid2) => {
-    return [uid1, uid2].sort().join("_");
-  };
-
-  const fetchEvents = async () => {
-    const fetchedEvents = await readEvents();
-    setEvents(fetchedEvents);
-  };
   const getCountdownTime = () => {
     if (!countdownEnd) return 0;
-
     const endDate = new Date(countdownEnd.year, countdownEnd.month - 1, countdownEnd.day);
     const diff = Math.floor((endDate.getTime() - new Date().getTime()) / 1000);
     return diff > 0 ? diff : 0;
@@ -111,35 +41,11 @@ export default function CalendarScreen() {
         month: parseInt(selectedDate.slice(5, 7)),
         day: parseInt(selectedDate.slice(8, 10)),
       };
-
-      setCountdownEnd(countdownDate); // Updating the state directly
+      await updateCountdownDate(countdownDate); // Update countdown date
+      const diff = getCountdownTime();
+      setCountdownTime(diff);
       setIsCountdownVisible(true);
-
-      await createOrUpdateCountdown(countdownDate);
     }
-  };
-
-  const handleCreateEvent = async () => {
-    if (newEventTitle !== "") {
-      await createEvent({ title: newEventTitle, date: selectedDate });
-      setNewEventTitle("");
-      fetchEvents();
-      setDialogVisible(false);
-    }
-  };
-
-  const handleUpdateEvent = async () => {
-    if (updatedEventTitle !== "") {
-      await updateEvent(selectedEventId, { title: updatedEventTitle, date: selectedDate });
-      setUpdatedEventTitle("");
-      fetchEvents();
-      setUpdateDialogVisible(false);
-    }
-  };
-
-  const handleDeleteEvent = async (eventId) => {
-    await deleteEvent(eventId);
-    fetchEvents();
   };
 
   const openDialog = () => {
@@ -149,25 +55,6 @@ export default function CalendarScreen() {
   const openUpdateDialog = (eventId) => {
     setSelectedEventId(eventId);
     setUpdateDialogVisible(true);
-  };
-
-  const getIsLongDistance = async () => {
-    const docRef = doc(db, "users", auth.currentUser.uid);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const userData = docSnap.data();
-      return userData.relationshipStatus === "Longdistant";
-    }
-  };
-
-  const checkLongDistance = async () => {
-    const isLongDistanceRelationship = await getIsLongDistance();
-    setIsLongDistance(isLongDistanceRelationship);
-
-    if (isLongDistanceRelationship) {
-      // Fetch countdown end date if it's a long-distance relationship
-      await fetchCountdownEndDate();
-    }
   };
 
   const renderEvents = () => {
@@ -188,9 +75,8 @@ export default function CalendarScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
-      {isCountdownVisible && isLongDistance && (
-        <CountdownComponent until={getCountdownTime()} onFinish={() => setIsCountdownVisible(false)} />
-      )}
+      {isCountdownVisible && isLongDistance && <CountdownComponent until={countdownTime} onFinish={() => setIsCountdownVisible(false)} />}
+
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={handleDayPress} />
       </View>
@@ -204,7 +90,7 @@ export default function CalendarScreen() {
       <ScrollView>{renderEvents()}</ScrollView>
       <Dialog visible={dialogVisible} onTouchOutside={() => setDialogVisible(false)}>
         <TextInput style={styles.input} placeholder="Enter Event Title..." value={newEventTitle} onChangeText={setNewEventTitle} />
-        <Button title="Save Event" onPress={handleCreateEvent} />
+        <Button title="Save Event" onPress={() => handleCreateEvent(newEventTitle, selectedDate)} />
       </Dialog>
       <Dialog visible={updateDialogVisible} onTouchOutside={() => setUpdateDialogVisible(false)}>
         <TextInput
@@ -213,7 +99,7 @@ export default function CalendarScreen() {
           value={updatedEventTitle}
           onChangeText={setUpdatedEventTitle}
         />
-        <Button title="Update Event" onPress={handleUpdateEvent} />
+        <Button title="Update Event" onPress={() => handleUpdateEvent(selectedEventId, updatedEventTitle, selectedDate)} />
       </Dialog>
     </View>
   );
