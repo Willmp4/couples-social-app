@@ -23,6 +23,14 @@ export default function CalendarScreen() {
 
   const isLongDistance = relationshipStatus === "LongDistance";
 
+  useEffect(() => {
+    const diff = getCountdownTime();
+    if (diff > 0) {
+      setCountdownTime(diff);
+      setIsCountdownVisible(true);
+    }
+  }, [countdownEnd]);
+
   const getCountdownTime = () => {
     if (!countdownEnd) return 0;
     const endDate = new Date(countdownEnd.year, countdownEnd.month - 1, countdownEnd.day);
@@ -42,9 +50,11 @@ export default function CalendarScreen() {
         day: parseInt(selectedDate.slice(8, 10)),
       };
       await updateCountdownDate(countdownDate); // Update countdown date
-      const diff = getCountdownTime();
-      setCountdownTime(diff);
-      setIsCountdownVisible(true);
+      const diff = getCountdownTime(); // Calculate countdown time after updating the date
+      if (diff > 0) {
+        setCountdownTime(diff);
+        setIsCountdownVisible(true);
+      }
     }
   };
 
@@ -75,7 +85,9 @@ export default function CalendarScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
-      {isCountdownVisible && isLongDistance && <CountdownComponent until={countdownTime} onFinish={() => setIsCountdownVisible(false)} />}
+      {countdownTime > 0 && isCountdownVisible && (
+        <CountdownComponent until={countdownTime} onFinish={() => setIsCountdownVisible(false)} />
+      )}
 
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={handleDayPress} />

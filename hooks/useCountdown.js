@@ -8,7 +8,6 @@ import { setDoc } from "firebase/firestore";
 export const useCountdownData = () => {
   const [countdownEnd, setCountdownEnd] = useState(null);
   const [isCountdownVisible, setIsCountdownVisible] = useState(false);
-  console.log("countdownEnd", countdownEnd);
   const { relationshipStatus } = useRelationshipStatus();
   const getCoupleID = (uid1, uid2) => {
     return [uid1, uid2].sort().join("_");
@@ -60,9 +59,10 @@ export const useCountdownData = () => {
       if (relationshipStatus === "LongDistance") {
         await fetchCountdownEndDate();
         console.log("countdownEnd", countdownEnd);
-        setIsCountdownVisible(true);
       }
     };
+    setIsCountdownVisible(true);
+
     checkLongDistance();
   }, [relationshipStatus]);
 
