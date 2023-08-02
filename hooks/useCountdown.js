@@ -6,13 +6,10 @@ import { useRelationshipStatus } from "./useRelationshipStatus";
 import { setDoc } from "firebase/firestore";
 
 export const useCountdownData = () => {
-  console.log("useCountdownData");
-  const [isLoading, setIsLoading] = useState(true);
   const [countdownEnd, setCountdownEnd] = useState(null);
-
+  const [isCountdownVisible, setIsCountdownVisible] = useState(false);
+  console.log("countdownEnd", countdownEnd);
   const { relationshipStatus } = useRelationshipStatus();
-  console.log(relationshipStatus);
-
   const getCoupleID = (uid1, uid2) => {
     return [uid1, uid2].sort().join("_");
   };
@@ -46,7 +43,6 @@ export const useCountdownData = () => {
       const usernameSnap = await getDoc(usernameRef);
 
       partnerUid = usernameSnap.data().uid;
-      // Now you can continue using partnerUid as needed
     }
 
     const coupleID = getCoupleID(auth.currentUser.uid, partnerUid);
@@ -64,11 +60,11 @@ export const useCountdownData = () => {
       if (relationshipStatus === "LongDistance") {
         await fetchCountdownEndDate();
         console.log("countdownEnd", countdownEnd);
-        setIsLoading(false); // Set loading to false after fetching the data
+        setIsCountdownVisible(true);
       }
     };
     checkLongDistance();
-  }, [relationshipStatus]);
+  }, [relationshipStatus]); 
 
-  return { countdownEnd, updateCountdownDate, fetchCountdownEndDate, isLoading };
+  return { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible};
 };

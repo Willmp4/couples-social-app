@@ -8,30 +8,25 @@ import { useCountdownData } from "../../hooks/useCountdown";
 import { useRelationshipStatus } from "../../hooks/useRelationshipStatus";
 
 export default function CalendarScreen() {
-  useEffect(() => {
-    // Check if countdown should be visible
-    if (isLongDistance && getCountdownTime() > 0) {
-      setIsCountdownVisible(true);
-    }
-  }, [isLongDistance, countdownEnd]); // Re-run when these values change
-
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [newEventTitle, setNewEventTitle] = useState("");
   const [updatedEventTitle, setUpdatedEventTitle] = useState("");
   const [dialogVisible, setDialogVisible] = useState(false);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
-  const [isCountdownVisible, setIsCountdownVisible] = useState(false);
 
   const { events, handleCreateEvent, handleUpdateEvent, handleDeleteEvent } = useEvents();
-  const { countdownEnd, updateCountdownDate, isLoading } = useCountdownData();
+  const { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible} = useCountdownData();
+
   const { relationshipStatus } = useRelationshipStatus();
 
   const isLongDistance = relationshipStatus === "LongDistance";
+  useEffect(() => {
+    setIsCountdownVisible(true);
+  }, [countdownEnd]);
 
   const getCountdownTime = () => {
     if (!countdownEnd) return 0;
-
     const endDate = new Date(countdownEnd.year, countdownEnd.month - 1, countdownEnd.day);
     const diff = Math.floor((endDate.getTime() - new Date().getTime()) / 1000);
     return diff > 0 ? diff : 0;
@@ -48,9 +43,8 @@ export default function CalendarScreen() {
         month: parseInt(selectedDate.slice(5, 7)),
         day: parseInt(selectedDate.slice(8, 10)),
       };
+      await updateCountdownDate(countdownDate); // Update countdown date
       setIsCountdownVisible(true);
-
-      await updateCountdownDate(countdownDate); // Updating the countdown date in Firebase
     }
   };
 
@@ -78,12 +72,12 @@ export default function CalendarScreen() {
     ));
   };
 
- 
-
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
-      {isLongDistance && <CountdownComponent until={getCountdownTime()} onFinish={() => setIsCountdownVisible(false)} />}
+      {isCountdownVisible && isLongDistance && (
+        <CountdownComponent until={getCountdownTime()} onFinish={() => setIsCountdownVisible(false)} />
+      )}
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={handleDayPress} />
       </View>
