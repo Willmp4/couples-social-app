@@ -3,10 +3,10 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { auth, db } from "../../utils/Firebase";
 import { collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
-import useUserLocation from "../../hooks/useUserLocation";
-import useUserTimezone from "../../hooks/useUserTimeZone";
-import useAuth from "../../hooks/useAuth";
-import usePartnerTimezone from "../../hooks/usePartnerTimeZone";
+import useUserLocation from "../../hooks/LocationHooks/useUserLocation";
+import useUserTimezone from "../../hooks/LocationHooks/useUserTimeZone";
+import useAuth from "../../hooks/AuthHooks/useAuth";
+import usePartnerTimezone from "../../hooks/LocationHooks/usePartnerTimeZone";
 
 const OurTime = () => {
   const { user, loading } = useAuth();
@@ -36,7 +36,7 @@ const OurTime = () => {
   // Modify the return statement to conditionally render based on relationshipStatus
   return (
     <View>
-      {relationshipStatus === "Longdistant" && (
+      {relationshipStatus === "LongDistance" && (
         <>
           <Text style={styles.title}>Our Time</Text>
           <Text style={styles.title}>Country: {country}</Text>

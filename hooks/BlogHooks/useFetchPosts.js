@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
-import { db, auth } from "../utils/Firebase";
-import getPartnerUsername from "../utils/getPartnerUsername";
-import useAuth from "./useAuth";
+import { db, auth } from "../../utils/Firebase";
+import getPartnerUsername from "../../utils/getPartnerUsername";
+import useAuth from "../AuthHooks/useAuth";
 
 function useFetchPosts(uid, partnerRequired = true) {
   const [posts, setPosts] = useState([]);

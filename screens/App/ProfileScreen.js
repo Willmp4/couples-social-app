@@ -10,7 +10,7 @@ import { Button } from "react-native-elements";
 import { uploadImageToFirebase } from "../../services/firebaseFunctions";
 import Logout from "../../components/Logout";
 import ProfilePicture from "../../components/ProfilePicture";
-import useAuth from "../../hooks/useAuth";
+import useAuth from "../../hooks/AuthHooks/useAuth";
 
 const ProfileScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
