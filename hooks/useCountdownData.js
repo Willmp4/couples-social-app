@@ -57,12 +57,8 @@ export const useCountdownData = () => {
   useEffect(() => {
     const checkLongDistance = async () => {
       if (relationshipStatus === "LongDistance") {
-        await fetchCountdownEndDate();
-        console.log("countdownEnd", countdownEnd);
-      }
+        await fetchCountdownEndDate();      }
     };
-    setIsCountdownVisible(true);
-
     checkLongDistance();
   }, [relationshipStatus]);
 

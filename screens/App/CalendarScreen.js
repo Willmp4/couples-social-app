@@ -4,7 +4,6 @@ import { Calendar } from "react-native-calendars";
 import { Dialog } from "react-native-simple-dialogs";
 import CountdownComponent from "../../components/CalendarComponents/CountdownComponent";
 import { useEvents } from "../../hooks/useCalendarEvents";
-import { useCountdownData } from "../../hooks/useCountdown";
 import { useRelationshipStatus } from "../../hooks/useRelationshipStatus";
 
 export default function CalendarScreen() {
@@ -14,48 +13,12 @@ export default function CalendarScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
-  const [countdownTime, setCountdownTime] = useState(0);
-
   const { events, handleCreateEvent, handleUpdateEvent, handleDeleteEvent } = useEvents();
-  const { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible } = useCountdownData();
-
   const { relationshipStatus } = useRelationshipStatus();
-
   const isLongDistance = relationshipStatus === "LongDistance";
-
-  useEffect(() => {
-    const diff = getCountdownTime();
-    if (diff > 0) {
-      setCountdownTime(diff);
-      setIsCountdownVisible(true);
-    }
-  }, [countdownEnd]);
-
-  const getCountdownTime = () => {
-    if (!countdownEnd) return 0;
-    const endDate = new Date(countdownEnd.year, countdownEnd.month - 1, countdownEnd.day);
-    const diff = Math.floor((endDate.getTime() - new Date().getTime()) / 1000);
-    return diff > 0 ? diff : 0;
-  };
 
   const handleDayPress = (day) => {
     setSelectedDate(day.dateString);
-  };
-
-  const startCountdown = async () => {
-    if (isLongDistance) {
-      let countdownDate = {
-        year: parseInt(selectedDate.slice(0, 4)),
-        month: parseInt(selectedDate.slice(5, 7)),
-        day: parseInt(selectedDate.slice(8, 10)),
-      };
-      await updateCountdownDate(countdownDate); // Update countdown date
-      const diff = getCountdownTime(); // Calculate countdown time after updating the date
-      if (diff > 0) {
-        setCountdownTime(diff);
-        setIsCountdownVisible(true);
-      }
-    }
   };
 
   const openDialog = () => {
@@ -85,14 +48,10 @@ export default function CalendarScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
-      {countdownTime > 0 && isCountdownVisible && (
-        <CountdownComponent until={countdownTime} onFinish={() => setIsCountdownVisible(false)} />
-      )}
-
+      <CountdownComponent selectedDate={selectedDate} isLongDistance={isLongDistance} />
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={handleDayPress} />
       </View>
-      <Button title="Start Countdown" onPress={startCountdown} />
       {selectedDate && (
         <TouchableOpacity style={styles.addButton} onPress={openDialog}>
           <Text style={styles.addButtonText}>Create Event</Text>
