@@ -38,9 +38,17 @@ export default function CalendarScreen() {
 
     return filteredEvents.map((event) => (
       <View key={event.id} style={styles.eventContainer}>
-        <Text>{event.title}</Text>
-        <Button title="Update Event" onPress={() => openUpdateDialog(event.id)} />
-        <Button title="Delete Event" onPress={() => handleDeleteEvent(event.id)} />
+        <View style={styles.eventDetails}>
+          <Text style={styles.eventText}>{event.title}</Text>
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity style={styles.button} onPress={() => openUpdateDialog(event.id)}>
+              <Text style={styles.buttonText}>Update Event</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => handleDeleteEvent(event.id)}>
+              <Text style={styles.buttonText}>Delete Event</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     ));
   };
@@ -53,8 +61,8 @@ export default function CalendarScreen() {
         <Calendar style={styles.calendar} onDayPress={handleDayPress} />
       </View>
       {selectedDate && (
-        <TouchableOpacity style={styles.addButton} onPress={openDialog}>
-          <Text style={styles.addButtonText}>Create Event</Text>
+        <TouchableOpacity style={styles.fab} onPress={openDialog}>
+          <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
       )}
       <Text style={styles.dateHeader}>{selectedDate}</Text>
@@ -82,42 +90,95 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
+    backgroundColor: "#f5f5f5", // Setting a lighter background color for contrast
   },
   header: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 20,
+    color: "#333",
+  },
+  fab: {
+    width: 56, // Set to desired dimensions
+    height: 56,
+    borderRadius: 28, // Half of width and height to create a circle
+    backgroundColor: "#000",
+    position: "absolute",
+    bottom: 120, // Set desired distance from the bottom
+    right: 20, // Set desired distance from the right
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5, // Add elevation for Android
+  },
+  fabText: {
+    fontSize: 30, // Set font size for the plus sign
+    color: "#fff",
   },
   calendarContainer: {
     width: "100%",
+    marginBottom: 10,
   },
   calendar: {
-    width: "100%",
+    borderWidth: 1,
+    borderColor: "lightgray",
+    borderRadius: 8,
   },
   dateHeader: {
     fontSize: 20,
     fontWeight: "bold",
-    marginTop: 10,
+    marginTop: 20,
     marginBottom: 10,
+    color: "#333",
   },
   noEventsText: {
     textAlign: "center",
     marginTop: 10,
+    color: "#555",
   },
   input: {
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
+    borderRadius: 8,
     width: "100%",
     marginBottom: 20,
     padding: 10,
   },
   eventContainer: {
-    marginTop: 20,
-    borderColor: "gray",
-    borderWidth: 1,
+    backgroundColor: "black",
+    borderRadius: 8,
     padding: 10,
-    width: "100%",
+    marginTop: 20,
+  },
+  eventDetails: {
+    // New style to stack elements vertically
+    flexDirection: "column",
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 5, // Add some margin to separate buttons from the title
+  },
+  button: {
+    backgroundColor: "#fff",
+    borderRadius: 4,
+    padding: 5,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: "#000",
+    fontSize: 12,
+    textAlign: "center", // Center the text within the button
+  },
+  eventText: {
+    color: "#fff", // White color for better visibility on a black background
   },
   addButton: {
     marginTop: 20,
