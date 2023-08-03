@@ -13,7 +13,7 @@ import MyPostsScreen from "./screens/App/MyPostsScreen";
 import CouplesDashBoard from "./screens/App/CouplesDashboardScreen";
 import Toast from 'react-native-toast-message'
 import Logout from "./components/Logout";
-import useAuth from "./hooks/useAuth";
+import useAuth from "./hooks/AuthHooks/useAuth";
 
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();

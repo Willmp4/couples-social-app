@@ -1,6 +1,6 @@
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { reduceImageResolution } from "../utils/imageUtils";
+import { reduceImageResolution } from "../../utils/imageUtils";
 
 export default function useImagePicker() {
   const [image, setImage] = useState(null);

@@ -3,7 +3,7 @@ import { StyleSheet, View, Button, Text, TextInput, ScrollView, TouchableOpacity
 import { Calendar } from "react-native-calendars";
 import { Dialog } from "react-native-simple-dialogs";
 import CountdownComponent from "../../components/CalendarComponents/CountdownComponent";
-import { useEvents } from "../../hooks/useCalendarEvents";
+import { useEvents } from "../../hooks/CalendarEventHooks/useCalendarEvents";
 import { useRelationshipStatus } from "../../hooks/useRelationshipStatus";
 
 export default function CalendarScreen() {

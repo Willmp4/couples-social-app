@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { db } from "../utils/Firebase";
+import { db } from "../../utils/Firebase";
 import { deleteDoc, doc } from "firebase/firestore";
 import { toast } from "react-toastify";
 

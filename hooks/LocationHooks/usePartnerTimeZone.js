@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import moment from "moment-timezone";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
-import { db } from "../utils/Firebase";
+import { db } from "../../utils/Firebase";
 
 const usePartnerTimezone = (partner) => {
   const [partnerTimezone, setPartnerTimezone] = useState("");

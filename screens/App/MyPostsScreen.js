@@ -7,8 +7,8 @@ import Post from "../../components/Post";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import ProfileScreen from "./ProfileScreen";
-import useFetchPosts from "../../hooks/useFetchPosts";
-import useDeletePost from "../../hooks/useDeletePost";
+import useFetchPosts from "../../hooks/BlogHooks/useFetchPosts";
+import useDeletePost from "../../hooks/BlogHooks/useDeletePost";
 import { useFocusEffect } from "@react-navigation/native";
 
 // // Create a Drawer Navigator

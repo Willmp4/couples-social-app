@@ -1,6 +1,6 @@
 import React from "react";
 import Countdown from "react-native-countdown-component";
-import { useCountdownLogic } from "../../hooks/useCountdownLogic";
+import { useCountdownLogic } from "../../hooks/CountDownHooks/useCountdownLogic";
 import { Button } from "react-native";
 
 export default function CountdownComponent({ selectedDate, isLongDistance, size = 20 }) {

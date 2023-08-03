@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import * as Location from "expo-location";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
-import { getCountryFromCoordinates, getTimezoneFromCoordinates } from "../utils/getLocation";
-import { auth, db } from "../utils/Firebase";
+import { getCountryFromCoordinates, getTimezoneFromCoordinates } from "../../utils/getLocation";
+import { auth, db } from "../../utils/Firebase";
 
 const useUserLocation = () => {
   const [country, setCountry] = useState(null);

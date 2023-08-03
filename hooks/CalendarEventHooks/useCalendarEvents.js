@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { readEvents, createEvent, updateEvent, deleteEvent } from "../services/calendar";
+import { readEvents, createEvent, updateEvent, deleteEvent } from "../../services/calendar";
 
 export const useEvents = () => {
   const [events, setEvents] = useState([]);

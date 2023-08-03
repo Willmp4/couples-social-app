@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import getPartnerUsername from "../utils/getPartnerUsername";
+import getPartnerUsername from "../../utils/getPartnerUsername";
 import { doc, getDoc } from "firebase/firestore";
-import { db, auth } from "../utils/Firebase";
-import { useRelationshipStatus } from "./useRelationshipStatus";
+import { db, auth } from "../../utils/Firebase";
+import { useRelationshipStatus } from "../useRelationshipStatus";
 import { setDoc } from "firebase/firestore";
 
 export const useCountdownData = () => {
@@ -57,7 +57,8 @@ export const useCountdownData = () => {
   useEffect(() => {
     const checkLongDistance = async () => {
       if (relationshipStatus === "LongDistance") {
-        await fetchCountdownEndDate();      }
+        await fetchCountdownEndDate();
+      }
     };
     checkLongDistance();
   }, [relationshipStatus]);
