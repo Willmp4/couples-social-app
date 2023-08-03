@@ -5,6 +5,7 @@ import { Dialog } from "react-native-simple-dialogs";
 import CountdownComponent from "../../components/CalendarComponents/CountdownComponent";
 import { useEvents } from "../../hooks/CalendarEventHooks/useCalendarEvents";
 import { useRelationshipStatus } from "../../hooks/useRelationshipStatus";
+import { useCountdownLogic } from "../../hooks/CountDownHooks/useCountdownLogic";
 
 export default function CalendarScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
@@ -14,6 +15,7 @@ export default function CalendarScreen() {
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
   const { events, handleCreateEvent, handleUpdateEvent, handleDeleteEvent } = useEvents();
+  const { countdownTime, isCountdownVisible, startCountdown, setIsCountdownVisible } = useCountdownLogic();
   const { relationshipStatus } = useRelationshipStatus();
   const isLongDistance = relationshipStatus === "LongDistance";
 
@@ -29,6 +31,17 @@ export default function CalendarScreen() {
     setSelectedEventId(eventId);
     setUpdateDialogVisible(true);
   };
+
+  const renderStartCountdownButton = () => {
+    if (selectedDate) {
+      return (
+        <TouchableOpacity style={styles.countdownButton} onPress={() => startCountdown(selectedDate)}>
+          <Text style={styles.countdownButtonText}>⏰</Text> 
+        </TouchableOpacity>
+      );
+    }
+  };
+  
 
   const renderEvents = () => {
     const filteredEvents = events.filter((event) => event.date === selectedDate);
@@ -56,7 +69,7 @@ export default function CalendarScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Calendar</Text>
-      <CountdownComponent selectedDate={selectedDate} isLongDistance={isLongDistance} />
+      <CountdownComponent countdownTime={countdownTime} isCountdownVisible={isCountdownVisible} />
       <View style={styles.calendarContainer}>
         <Calendar style={styles.calendar} onDayPress={handleDayPress} />
       </View>
@@ -66,6 +79,7 @@ export default function CalendarScreen() {
         </TouchableOpacity>
       )}
       <Text style={styles.dateHeader}>{selectedDate}</Text>
+      {renderStartCountdownButton()}
       <ScrollView>{renderEvents()}</ScrollView>
       <Dialog visible={dialogVisible} onTouchOutside={() => setDialogVisible(false)}>
         <TextInput style={styles.input} placeholder="Enter Event Title..." value={newEventTitle} onChangeText={setNewEventTitle} />
@@ -92,10 +106,32 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5", // Setting a lighter background color for contrast
   },
+  countdownButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#000",
+    position: "absolute",
+    bottom: 120, // Set to the same distance from the bottom as the plus sign button
+    left: 20, // Set to the left side
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  countdownButtonText: {
+    fontSize: 30, // Set font size for the clock emoji
+    color: "#fff",
+  },
   header: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
     color: "#333",
   },
   fab: {
@@ -133,8 +169,8 @@ const styles = StyleSheet.create({
   dateHeader: {
     fontSize: 20,
     fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 10,
+    marginBottom: 5,
     color: "#333",
   },
   noEventsText: {
