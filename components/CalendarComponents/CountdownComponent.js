@@ -4,7 +4,7 @@ import { useCountdownLogic } from "../../hooks/CountDownHooks/useCountdownLogic"
 import { Button } from "react-native";
 
 export default function CountdownComponent({ selectedDate, isLongDistance, size = 20 }) {
-  const { countdownTime, isCountdownVisible, startCountdown } = useCountdownLogic();
+  const { countdownTime, isCountdownVisible, startCountdown, setIsCountdownVisible } = useCountdownLogic();
 
   return (
     <>

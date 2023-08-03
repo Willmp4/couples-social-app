@@ -34,5 +34,5 @@ export const useCountdownLogic = () => {
     }
   }, [countdownEnd]);
 
-  return { countdownTime, isCountdownVisible, startCountdown };
+  return { countdownTime, isCountdownVisible, startCountdown, setIsCountdownVisible};
 };
