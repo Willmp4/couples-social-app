@@ -19,7 +19,7 @@ export default function useImagePicker() {
       quality: 1,
     });
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       const reducedImageUri = await reduceImageResolution(result.uri);
       setImage(reducedImageUri);
     }
