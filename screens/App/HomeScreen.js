@@ -17,37 +17,44 @@ export default function Home() {
   const { user, loading } = useAuth();
 
   const fetchAndSetHighlightPosts = () => {
+    let unsubscribe; // Initialize unsubscribe outside the if block
+
     const highlightsQuery = query(
       collection(db, "highlights"),
       orderBy("created_at", "desc") // assuming posts have a 'createdAt' field
     );
 
-    const unsubscribe = onSnapshot(highlightsQuery, (querySnapshot) => {
-      const posts = [];
-      querySnapshot.forEach((doc) => {
-        posts.push({
-          id: doc.id,
-          ...doc.data(),
+    if (auth.currentUser) {
+      unsubscribe = onSnapshot(highlightsQuery, (querySnapshot) => {
+        const posts = [];
+        querySnapshot.forEach((doc) => {
+          posts.push({
+            id: doc.id,
+            ...doc.data(),
+          });
         });
-      });
 
-      setHighlights(posts);
-    });
+        setHighlights(posts);
+      });
+    }
 
     // Return the unsubscribe function to ensure we stop listening when the component is unmounted
     return unsubscribe;
   };
 
   useEffect(() => {
-    // store the unsubscribe function returned by fetchAndSetHighlightPosts
+    // Store the unsubscribe function returned by fetchAndSetHighlightPosts
     const unsubscribe = fetchAndSetHighlightPosts();
 
     // Cleanup: unsubscribe from updates when component unmounts
     return () => {
       console.log("Unsubscribing from highlights");
-      unsubscribe();
+      if (unsubscribe) {
+        // Check if unsubscribe is defined before calling it
+        unsubscribe();
+      }
     };
-  }, [db]);
+  }, [db, auth.currentUser]);
 
   const deleteHighlight = async (blogPostId) => {
     try {
@@ -94,10 +101,6 @@ export default function Home() {
     const newPosition = Math.round(event.nativeEvent.contentOffset.x / width);
     setCurrentPosition(newPosition);
   };
-
-  useEffect(() => {
-    fetchAndSetHighlightPosts();
-  }, [db]);
 
   useEffect(() => {
     startAutoScroll();
