@@ -53,6 +53,14 @@ const useUserLocation = () => {
     }
   }, [auth.currentUser]);
 
+  useEffect(() => {
+    if (auth.currentUser) {
+      if (!country || !timezone) {
+        updateLocationData();
+      }
+    }
+  }, [auth.currentUser]);
+
   return { country, timezone };
 };
 
