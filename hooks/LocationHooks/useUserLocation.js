@@ -37,24 +37,21 @@ const useUserLocation = () => {
   };
 
   useEffect(() => {
-    const userRef = doc(db, "users", auth.currentUser.uid);
-    const unsubscribe = onSnapshot(userRef, (doc) => {
-      const userData = doc.data();
-      if (userData) {
-        setCountry(userData.country);
-        setTimezone(userData.userTimezone);
-      }
-    });
+    if (auth.currentUser) {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const unsubscribe = onSnapshot(userRef, (doc) => {
+        const userData = doc.data();
+        if (userData) {
+          setCountry(userData.country);
+          setTimezone(userData.userTimezone);
+        }
+      });
 
-    return () => {
-      unsubscribe(); // Cleanup function to unsubscribe
-    };
-  }, []);
-
-  useEffect(() => {
-    const intervalId = setInterval(updateLocationData);
-    return () => clearInterval(intervalId);
-  }, []);
+      return () => {
+        unsubscribe(); // Cleanup function to unsubscribe
+      };
+    }
+  }, [auth.currentUser]);
 
   return { country, timezone };
 };
