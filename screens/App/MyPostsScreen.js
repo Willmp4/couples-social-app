@@ -41,7 +41,7 @@ function MyPosts() {
         style={styles.list}
         data={posts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Post post={item} deletePost={handleDelete} showOptions={true} postType={'user'} />}
+        renderItem={({ item }) => <Post post={item} deletePost={handleDelete} showOptions={true} postType={"user"} />}
         refreshing={refreshing}
         onRefresh={fetchPosts}
       />

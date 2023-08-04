@@ -51,9 +51,8 @@ const useUserLocation = () => {
     };
   }, []);
 
-  // Periodic check for location change, e.g., every 15 minutes
   useEffect(() => {
-    const intervalId = setInterval(updateLocationData, 15 * 60 * 1000);
+    const intervalId = setInterval(updateLocationData);
     return () => clearInterval(intervalId);
   }, []);
 
