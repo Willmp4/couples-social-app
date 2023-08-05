@@ -27,12 +27,18 @@ export const useCountdownLogic = () => {
   };
 
   useEffect(() => {
+    let isMounted = true; // create a flag
     const diff = getCountdownTime();
-    if (diff > 0) {
+    if (diff > 0 && isMounted) {
+      // use this flag before updating the state
       setCountdownTime(diff);
       setIsCountdownVisible(true);
     }
+    return () => {
+      isMounted = false; // set it to false when component unmounts
+      console.log("unmounted");
+    };
   }, [countdownEnd]);
 
-  return { countdownTime, isCountdownVisible, startCountdown, setIsCountdownVisible};
+  return { countdownTime, isCountdownVisible, startCountdown, setIsCountdownVisible };
 };

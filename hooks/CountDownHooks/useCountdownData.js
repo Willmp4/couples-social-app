@@ -55,12 +55,17 @@ export const useCountdownData = () => {
   };
 
   useEffect(() => {
+    let isMounted = true; // create a flag
     const checkLongDistance = async () => {
-      if (relationshipStatus === "LongDistance") {
+      if (relationshipStatus === "LongDistance" && isMounted) {
+        // use this flag before calling async function
         await fetchCountdownEndDate();
       }
     };
     checkLongDistance();
+    return () => {
+      isMounted = false; // set it to false when component unmounts
+    };
   }, [relationshipStatus]);
 
   return { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible };

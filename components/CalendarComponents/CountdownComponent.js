@@ -2,19 +2,20 @@ import React from "react";
 import Countdown from "react-native-countdown-component";
 import { useCountdownLogic } from "../../hooks/CountDownHooks/useCountdownLogic";
 import { Button, View, StyleSheet } from "react-native";
+import { useCountdownData } from "../../hooks/CountDownHooks/useCountdownData";
 
 export default function CountdownComponent({ countdownTime, isCountdownVisible, size = 20 }) {
-  const { setIsCountdownVisible } = useCountdownLogic();
+  const { setIsCountdownVisible } = useCountdownData();
 
+  console.log("CountdownComponent: ", countdownTime, isCountdownVisible, size);
   return (
     <View style={styles.container}>
-      {countdownTime > 0 && isCountdownVisible && (
+      {countdownTime !== undefined && countdownTime !== null && countdownTime > 0 && isCountdownVisible && (
         <Countdown
-          until={countdownTime}
-          onFinish={() => setIsCountdownVisible(false)}
+          until={1000}
+          onFinish={() => {}}
           size={size}
           timeLabelStyle={styles.timeLabel}
-          timeToShow={["D", "H", "M", "S"]}
           digitStyle={styles.digit}
           digitTxtStyle={styles.digitText}
         />
@@ -33,7 +34,6 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   digit: {
-    backgroundColor: "000",
     borderWidth: 2,
     borderColor: "#000",
   },
