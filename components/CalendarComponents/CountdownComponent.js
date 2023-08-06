@@ -4,16 +4,24 @@ import { useCountdownLogic } from "../../hooks/CountDownHooks/useCountdownLogic"
 import { Button, View, StyleSheet } from "react-native";
 import { useCountdownData } from "../../hooks/CountDownHooks/useCountdownData";
 
+class SafeCountdown extends Countdown {
+  componentWillUnmount() {
+    try {
+      super.componentWillUnmount();
+    } catch (error) {
+      console.error("Failed to clean up countdown:", error);
+    }
+  }
+}
+
 export default function CountdownComponent({ countdownTime, isCountdownVisible, size = 20 }) {
   const { setIsCountdownVisible } = useCountdownData();
-
-  console.log("CountdownComponent: ", countdownTime, isCountdownVisible, size);
   return (
     <View style={styles.container}>
       {countdownTime !== undefined && countdownTime !== null && countdownTime > 0 && isCountdownVisible && (
-        <Countdown
-          until={1000}
-          onFinish={() => {}}
+        <SafeCountdown
+          until={countdownTime}
+          onFinish={() => setIsCountdownVisible(false)}
           size={size}
           timeLabelStyle={styles.timeLabel}
           digitStyle={styles.digit}

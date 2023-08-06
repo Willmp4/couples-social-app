@@ -5,8 +5,6 @@ import { collection, query, getDocs, where, doc as docRef, deleteDoc, orderBy, o
 import useAuth from "../../hooks/AuthHooks/useAuth";
 import HighlightsCarousel from "../../components/HighlightsCarousel";
 import styles from "../../styles/Home.styles";
-import CountdownComponent from "../../components/CalendarComponents/CountdownComponent";
-import { useCountdownLogic } from "../../hooks/CountDownHooks/useCountdownLogic";
 
 const { width } = Dimensions.get("window");
 const AUTO_SCROLL_INTERVAL = 4000;
@@ -17,7 +15,6 @@ export default function Home() {
   const [currentPosition, setCurrentPosition] = useState(0);
   const scrollIntervalRef = useRef(null);
   const { user, loading } = useAuth();
-  const { countdownTime, isCountdownVisible, startCountdown, setIsCountdownVisible } = useCountdownLogic();
 
   const fetchAndSetHighlightPosts = () => {
     let unsubscribe; // Initialize unsubscribe outside the if block
@@ -114,9 +111,6 @@ export default function Home() {
     <View style={styles.container}>
       {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
       <Text style={styles.title}>Highlights</Text>
-      {countdownTime != undefined && countdownTime != null && isCountdownVisible && (
-        <CountdownComponent countdownTime={countdownTime} isCountdownVisible={isCountdownVisible} />
-      )}
       <HighlightsCarousel
         ref={scrollViewRef}
         highlights={highlights}

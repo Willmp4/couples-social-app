@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useCountdownData } from "./useCountdownData";
 
-export const useCountdownLogic = () => {
+export const useCountdownLogic = (isAuth) => {
   const [countdownTime, setCountdownTime] = useState(0);
-  const { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible } = useCountdownData();
+  const { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible } = useCountdownData(isAuth);
 
   const getCountdownTime = () => {
     if (!countdownEnd) return 0;
@@ -29,16 +29,15 @@ export const useCountdownLogic = () => {
   useEffect(() => {
     let isMounted = true; // create a flag
     const diff = getCountdownTime();
-    if (diff > 0 && isMounted) {
+    if (diff > 0 && isMounted && isAuth) {
       // use this flag before updating the state
       setCountdownTime(diff);
       setIsCountdownVisible(true);
     }
     return () => {
       isMounted = false; // set it to false when component unmounts
-      console.log("unmounted");
     };
-  }, [countdownEnd]);
+  }, [countdownEnd, isAuth]);
 
   return { countdownTime, isCountdownVisible, startCountdown, setIsCountdownVisible };
 };
