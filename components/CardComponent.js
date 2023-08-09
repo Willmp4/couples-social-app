@@ -13,6 +13,16 @@ function Card({ title, content, date }) {
 }
 
 export default function CardComponent({ updates = [] }) {
+  // Check if updates exist
+  if (updates.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>No updates available</Text>
+      </View>
+    );
+  }
+
+  const calculatedStackSize = Math.min(updates.length, 3);
   return (
     <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <Swiper
@@ -26,10 +36,10 @@ export default function CardComponent({ updates = [] }) {
         )}
         infinite={true}
         backgroundColor="transparent"
-        cardVerticalMargin={30}
-        stackSize={2}
-        stackSeparation={30}
-        stackRotation={8}
+        cardVerticalMargin={10}
+        stackSize={calculatedStackSize}
+        stackSeparation={15}
+        stackRotation={10}
       />
     </View>
   );
@@ -43,19 +53,21 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: "#E0E0E0", // light gray border
+    borderColor: "#E0E0E0",
 
     // iOS shadow properties
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
 
     // Android shadow
     elevation: 5,
 
     marginVertical: 10,
     alignSelf: "center",
+    transform: [{ translateY: -10 }, { rotate: "+5deg" }],
+    zIndex: 100, // Ensure the primary card is above the stacked cards
   },
   title: {
     fontSize: 12,
