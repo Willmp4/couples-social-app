@@ -11,8 +11,7 @@ export default function BlogPostImage() {
   const { user } = useAuth();
   const { image, pickImage } = useImagePicker();
 
-  //display name from user
-  const displayName = user.displayName;
+
   const addPost = async (imageUri, title, content) => {
     if (!imageUri) {
       alert("Please select an image before posting.");
@@ -24,7 +23,7 @@ export default function BlogPostImage() {
       await addPostToFirestore(title, content, downloadURL);
 
       //Call addUpdateToFirestore function
-      await addUpdateToFirestore("new_post", `${displayName} made a new post`);
+      await addUpdateToFirestore("new_post", `${user.displayName} made a new post`);
     } catch (error) {
       console.error("Error adding document: ", error);
     }
