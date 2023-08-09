@@ -60,6 +60,8 @@ export default function CardComponent({ updates = [] }) {
         stackSize={calculatedStackSize}
         stackSeparation={15}
         stackRotation={0} // Set rotation to 0 to override default rotation
+        swipeAnimationDuration={350}  // Milliseconds, adjust to your liking
+        swipeBackAnimationDuration={350}
       />
     </View>
   );
