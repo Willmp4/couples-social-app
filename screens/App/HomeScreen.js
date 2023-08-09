@@ -114,15 +114,20 @@ export default function Home() {
     <View style={styles.container}>
       {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
       <Text style={styles.title}>Highlights</Text>
-      <HighlightsCarousel
-        ref={scrollViewRef}
-        highlights={highlights}
-        onScrollBeginDrag={handleScrollBeginDrag}
-        onScrollEndDrag={handleScrollEndDrag}
-        onMomentumScrollEnd={handleMomentumScrollEnd}
-        onLongPress={deleteHighlight}
-      />
+  
+      <View style={styles.highlightsContainer}>
+        <HighlightsCarousel
+          ref={scrollViewRef}
+          highlights={highlights}
+          onScrollBeginDrag={handleScrollBeginDrag}
+          onScrollEndDrag={handleScrollEndDrag}
+          onMomentumScrollEnd={handleMomentumScrollEnd}
+          onLongPress={deleteHighlight}
+        />
+      </View>
+  
       <CardComponent updates={updates} />
     </View>
   );
+  
 }
