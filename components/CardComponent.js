@@ -12,6 +12,12 @@ function Card({ title, content, date, rotation = "0deg" }) {
   );
 }
 
+const calculateRotation = (currentIndex, cardIndex, totalCards) => {
+    let diff = cardIndex - currentIndex;
+    if (diff < 0) diff += totalCards;  // Adjust for wrap-around
+    return `${5 * diff}deg`;
+};
+
 export default function CardComponent({ updates = [] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -24,12 +30,13 @@ export default function CardComponent({ updates = [] }) {
   }
 
   const calculatedStackSize = Math.min(updates.length, 3);
+
   return (
     <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <Swiper
         cards={updates}
         renderCard={(card = {}, cardIndex) => {
-          const rotation = cardIndex === currentIndex ? "0deg" : `${5 * (cardIndex - currentIndex)}deg`;
+          const rotation = calculateRotation(currentIndex, cardIndex, updates.length);
           return (
             <Card
               title={card.title || "Update"}
@@ -57,7 +64,6 @@ export default function CardComponent({ updates = [] }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     width: "35%",
