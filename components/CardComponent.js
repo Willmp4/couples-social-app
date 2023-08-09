@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Swiper from "react-native-deck-swiper";
 import { View, Text, StyleSheet } from "react-native";
 
-function Card({ title, content, date }) {
+function Card({ title, content, date, rotation = "0deg" }) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { transform: [{ rotate: rotation }, { translateY: -10 }] }]}>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.content}>{content}</Text>
       {date && <Text style={styles.date}>{date}</Text>}
@@ -13,7 +13,8 @@ function Card({ title, content, date }) {
 }
 
 export default function CardComponent({ updates = [] }) {
-  // Check if updates exist
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   if (updates.length === 0) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -27,19 +28,24 @@ export default function CardComponent({ updates = [] }) {
     <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <Swiper
         cards={updates}
-        renderCard={(card = {}) => (
-          <Card
-            title={card.title || "Update"}
-            content={card.content}
-            date={new Date(card.timestamp?.seconds * 1000).toLocaleDateString()}
-          />
-        )}
+        renderCard={(card = {}, cardIndex) => {
+          const rotation = cardIndex === currentIndex ? "0deg" : `${5 * (cardIndex - currentIndex)}deg`;
+          return (
+            <Card
+              title={card.title || "Update"}
+              content={card.content}
+              date={new Date(card.timestamp?.seconds * 1000).toLocaleDateString()}
+              rotation={rotation}
+            />
+          );
+        }}
+        onSwiped={() => setCurrentIndex(prevIndex => prevIndex + 1)}
         infinite={true}
         backgroundColor="transparent"
         cardVerticalMargin={10}
         stackSize={calculatedStackSize}
         stackSeparation={15}
-        stackRotation={10}
+        stackRotation={0} // Set rotation to 0 to override default rotation
       />
     </View>
   );
@@ -66,7 +72,6 @@ const styles = StyleSheet.create({
 
     marginVertical: 10,
     alignSelf: "center",
-    transform: [{ translateY: -10 }, { rotate: "+5deg" }],
     zIndex: 100, // Ensure the primary card is above the stacked cards
   },
   title: {
