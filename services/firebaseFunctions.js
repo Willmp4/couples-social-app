@@ -31,6 +31,15 @@ export const addPostToFirestore = async (title, content, imageURL) => {
     });
   }
 };
+
+export const addUpdateToFirestore = async (type, content) => {
+  await addDoc(collection(db, "updates"), {
+    type: type,
+    content: content,
+    timestamp: serverTimestamp(),
+  });
+};
+
 export const saveRelationshipStatus = async (userId, status) => {
   try {
     // Reference to the specific user's document

@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { Button, View } from "react-native";
 import Dialog from "react-native-dialog";
-import { addPostToFirestore, uploadImageToFirebase } from "../../services/firebaseFunctions";
+import { addPostToFirestore, uploadImageToFirebase, addUpdateToFirestore } from "../../services/firebaseFunctions";
 import useImagePicker from "../../hooks/BlogHooks/useImagePicker";
+import useAuth from "../../hooks/AuthHooks/useAuth";
 
 export default function BlogPostImage() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [postContent, setPostContent] = useState("");
+  const { user } = useAuth();
   const { image, pickImage } = useImagePicker();
 
+  //display name from user
+  const displayName = user.displayName;
   const addPost = async (imageUri, title, content) => {
     if (!imageUri) {
       alert("Please select an image before posting.");
@@ -18,6 +22,9 @@ export default function BlogPostImage() {
     try {
       const downloadURL = await uploadImageToFirebase(imageUri, "blogPosts");
       await addPostToFirestore(title, content, downloadURL);
+
+      //Call addUpdateToFirestore function
+      await addUpdateToFirestore("new_post", `${displayName} made a new post`);
     } catch (error) {
       console.error("Error adding document: ", error);
     }

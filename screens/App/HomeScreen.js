@@ -3,8 +3,11 @@ import { View, Text, Dimensions, Alert } from "react-native";
 import { auth, db } from "../../utils/Firebase";
 import { collection, query, getDocs, where, doc as docRef, deleteDoc, orderBy, onSnapshot } from "firebase/firestore";
 import useAuth from "../../hooks/AuthHooks/useAuth";
+import CardComponent from "../../components/CardComponent";
+
 import HighlightsCarousel from "../../components/HighlightsCarousel";
 import styles from "../../styles/Home.styles";
+import useUpdates from "../../hooks/useUpdates";
 
 const { width } = Dimensions.get("window");
 const AUTO_SCROLL_INTERVAL = 4000;
@@ -15,6 +18,7 @@ export default function Home() {
   const [currentPosition, setCurrentPosition] = useState(0);
   const scrollIntervalRef = useRef(null);
   const { user, loading } = useAuth();
+  const { updates } = useUpdates();
 
   const fetchAndSetHighlightPosts = () => {
     let unsubscribe; // Initialize unsubscribe outside the if block
@@ -119,6 +123,10 @@ export default function Home() {
         onMomentumScrollEnd={handleMomentumScrollEnd}
         onLongPress={deleteHighlight}
       />
+
+      {updates.map((update) => (
+        <CardComponent key={update.id} content={update.content} date={new Date(update.timestamp?.seconds * 1000).toLocaleDateString()} />
+      ))}
     </View>
   );
 }
