@@ -30,6 +30,8 @@ function useUpdates(numberOfUpdates = 10) {
     return () => unsubscribe(); // Cleanup listener on component unmount
   }, [numberOfUpdates]);
 
+
+
   return { updates, loading, error };
 }
 
