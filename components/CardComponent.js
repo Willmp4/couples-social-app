@@ -39,7 +39,14 @@ export default function CardComponent({ updates = [] }) {
             />
           );
         }}
-        onSwiped={() => setCurrentIndex(prevIndex => prevIndex + 1)}
+        onSwiped={() => {
+          setCurrentIndex((prevIndex) => {
+            if (prevIndex + 1 >= updates.length) {
+              return 0; // reset to the start when we reach the end of the cards
+            }
+            return prevIndex + 1;
+          });
+        }}
         infinite={true}
         backgroundColor="transparent"
         cardVerticalMargin={10}
