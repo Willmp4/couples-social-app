@@ -33,11 +33,15 @@ export const addPostToFirestore = async (title, content, imageURL) => {
 };
 
 export const addUpdateToFirestore = async (type, content) => {
+  try{
   await addDoc(collection(db, "updates"), {
     type: type,
     content: content,
     timestamp: serverTimestamp(),
   });
+  } catch (error) {
+    console.error("Error adding document: ", error);
+  }
 };
 
 export const saveRelationshipStatus = async (userId, status) => {
