@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Swiper from "react-native-deck-swiper";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Animated } from "react-native";
 
-function Card({ title, content, date, rotation = "0deg" }) {
+function Card({ title, content, date, translateY = 0, translateX = 0 }) {
   return (
-    <View style={[styles.card, { transform: [{ rotate: rotation }, { translateY: -10 }] }]}>
+    <View
+      style={[
+        styles.card,
+        {
+          transform: [
+            { translateY: translateY },
+            { translateX: translateX },
+          ],
+        },
+      ]}
+    >
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.content}>{content}</Text>
       {date && <Text style={styles.date}>{date}</Text>}
@@ -12,10 +22,14 @@ function Card({ title, content, date, rotation = "0deg" }) {
   );
 }
 
-const calculateRotation = (currentIndex, cardIndex, totalCards) => {
-    let diff = cardIndex - currentIndex;
-    if (diff < 0) diff += totalCards;  // Adjust for wrap-around
-    return `${5 * diff}deg`;
+const calculateOffsets = (currentIndex, cardIndex, totalCards) => {
+  let diff = cardIndex - currentIndex;
+  if (diff < 0) diff += totalCards; // Adjust for wrap-around
+
+  return {
+    translateY: -10 * diff,
+    translateX: -10 * diff
+  };
 };
 
 export default function CardComponent({ updates = [] }) {
@@ -29,20 +43,21 @@ export default function CardComponent({ updates = [] }) {
     );
   }
 
-  const calculatedStackSize = Math.min(updates.length, 3);
+  const calculatedStackSize = Math.min(updates.length, 5);
 
   return (
     <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <Swiper
         cards={updates}
         renderCard={(card = {}, cardIndex) => {
-          const rotation = calculateRotation(currentIndex, cardIndex, updates.length);
+          const { translateY, translateX } = calculateOffsets(currentIndex, cardIndex, updates.length);
           return (
             <Card
               title={card.title || "Update"}
               content={card.content}
               date={new Date(card.timestamp?.seconds * 1000).toLocaleDateString()}
-              rotation={rotation}
+              translateY={translateY}
+              translateX={translateX}
             />
           );
         }}
@@ -58,14 +73,16 @@ export default function CardComponent({ updates = [] }) {
         backgroundColor="transparent"
         cardVerticalMargin={10}
         stackSize={calculatedStackSize}
-        stackSeparation={15}
-        stackRotation={0} // Set rotation to 0 to override default rotation
-        swipeAnimationDuration={350}  // Milliseconds, adjust to your liking
-        swipeBackAnimationDuration={350}
+        stackSeparation={10}
+        stackRotation={0} 
+        swipeAnimationDuration={500}
+        swipeBackAnimationDuration={500}
       />
     </View>
   );
 }
+
+
 const styles = StyleSheet.create({
   card: {
     width: "35%",
