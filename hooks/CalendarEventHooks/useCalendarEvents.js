@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { readEvents, createEvent, updateEvent, deleteEvent } from "../../services/calendar";
+import { addUpdateToFirestore } from "../../services/firebaseFunctions";
 
 export const useEvents = () => {
   const [events, setEvents] = useState([]);
@@ -15,6 +16,9 @@ export const useEvents = () => {
 
   const handleCreateEvent = async (newEventTitle, selectedDate) => {
     await createEvent({ title: newEventTitle, date: selectedDate });
+
+    await addUpdateToFirestore("event", `New event created: ${selectedDate} - ${newEventTitle}}`);
+
     fetchEvents();
   };
 
@@ -22,7 +26,6 @@ export const useEvents = () => {
     await updateEvent(selectedEventId, { title: updatedEventTitle, date: selectedDate });
     fetchEvents();
   };
-
   const handleDeleteEvent = async (eventId) => {
     await deleteEvent(eventId);
     fetchEvents();
