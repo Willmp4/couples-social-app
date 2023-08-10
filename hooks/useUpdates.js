@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "../utils/Firebase";
 
-function useUpdates(numberOfUpdates = 10) {
+function useUpdates(numberOfUpdates = 5) {
   const [updates, setUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
