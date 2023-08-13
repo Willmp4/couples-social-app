@@ -35,15 +35,16 @@ function DynamicUpdateBanner({ updates }) {
     // Handle banner press: Maybe navigate to details or show actions related to the update
   };
 
-  if (updates.length === 0) return null;
+  const currentUpdate = updates[currentUpdateIndex];
+  if (!currentUpdate) return null;
 
   return (
-    <TouchableOpacity onPress={handleBannerPress} style={styles.card}>
-      <Animated.View style={{ opacity: fadeAnimation }}>
-        <Text>{updates[currentUpdateIndex].content}</Text>
-        <Text style={styles.indicatorText}>{`${currentUpdateIndex + 1} of ${updates.length}`}</Text>
-      </Animated.View>
-    </TouchableOpacity>
+      <TouchableOpacity onPress={handleBannerPress} style={styles.card}>
+          <Animated.View style={{ opacity: fadeAnimation }}>
+              <Text>{currentUpdate.content}</Text>
+              <Text style={styles.indicatorText}>{`${currentUpdateIndex + 1} of ${updates.length}`}</Text>
+          </Animated.View>
+      </TouchableOpacity>
   );
 }
 
