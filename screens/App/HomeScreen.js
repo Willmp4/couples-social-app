@@ -6,7 +6,7 @@ import useAuth from "../../hooks/AuthHooks/useAuth";
 import HighlightsCarousel from "../../components/HighlightsCarousel";
 import styles from "../../styles/Home.styles";
 import useUpdates from "../../hooks/useUpdates";
-
+import DynamicBanner from "../../components/DynamicUpdateBanner";
 const { width } = Dimensions.get("window");
 const AUTO_SCROLL_INTERVAL = 4000;
 
@@ -90,8 +90,11 @@ export default function Home() {
   };
 
   const startAutoScroll = () => {
+    if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+    }
     scrollIntervalRef.current = setInterval(scrollToNextHighlight, AUTO_SCROLL_INTERVAL);
-  };
+};
 
   const handleScrollBeginDrag = () => clearInterval(scrollIntervalRef.current);
 
@@ -105,9 +108,18 @@ export default function Home() {
   };
 
   useEffect(() => {
-    startAutoScroll();
-    return () => clearInterval(scrollIntervalRef.current);
-  }, [highlights]);
+    if (!scrollIntervalRef.current) {
+        startAutoScroll();
+    }
+    
+    return () => {
+        if (scrollIntervalRef.current) {
+            clearInterval(scrollIntervalRef.current);
+            scrollIntervalRef.current = null;
+        }
+    };
+}, [highlights]);
+
 
   return (
     <View style={styles.container}>
@@ -124,7 +136,8 @@ export default function Home() {
           onLongPress={deleteHighlight}
         />
       </View>
+      <DynamicBanner updates={updates} />
     </View>
   );
-  
 }
+
