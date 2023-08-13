@@ -8,11 +8,7 @@ function DynamicUpdateBanner({ updates }) {
   const fadeAnimation = useRef(new Animated.Value(1)).current; // Use useRef here
 
   useEffect(() => {
-    console.log("Setting up interval");
-
     const interval = setInterval(() => {
-      console.log("Interval triggered");
-
       Animated.sequence([
         Animated.timing(fadeAnimation, {
           toValue: 0,
@@ -25,13 +21,11 @@ function DynamicUpdateBanner({ updates }) {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        console.log("Animation finished");
         setCurrentUpdateIndex((prevIndex) => (prevIndex + 1) % updates.length);
       });
     }, UPDATE_DISPLAY_DURATION);
 
     return () => {
-      console.log("Clearing interval");
       clearInterval(interval);
     };
   }, [fadeAnimation, updates]);
