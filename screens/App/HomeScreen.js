@@ -3,7 +3,6 @@ import { View, Text, Dimensions, Alert } from "react-native";
 import { auth, db } from "../../utils/Firebase";
 import { collection, query, getDocs, where, doc as docRef, deleteDoc, orderBy, onSnapshot } from "firebase/firestore";
 import useAuth from "../../hooks/AuthHooks/useAuth";
-import CardDeck from "../../components/CardDeck";
 import HighlightsCarousel from "../../components/HighlightsCarousel";
 import styles from "../../styles/Home.styles";
 import useUpdates from "../../hooks/useUpdates";
@@ -125,8 +124,6 @@ export default function Home() {
           onLongPress={deleteHighlight}
         />
       </View>
-  
-      <CardDeck updates={updates} />
     </View>
   );
   
