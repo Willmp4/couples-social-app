@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, Animated, StyleSheet } from "react-native";
 
 const UPDATE_DISPLAY_DURATION = 5000;
 
 function DynamicUpdateBanner({ updates }) {
   const [currentUpdateIndex, setCurrentUpdateIndex] = useState(0);
-  const fadeAnimation = useRef(new Animated.Value(1)).current; // Use useRef here
+  const fadeAnimation = useRef(new Animated.Value(1)).current; 
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,9 +30,8 @@ function DynamicUpdateBanner({ updates }) {
     };
   }, [fadeAnimation, updates]);
 
-
   const handleBannerPress = () => {
-    // Handle banner press: Maybe navigate to details or show actions related to the update
+    // Handle banner press
   };
 
   const currentUpdate = updates[currentUpdateIndex];
@@ -41,18 +40,27 @@ function DynamicUpdateBanner({ updates }) {
   return (
       <TouchableOpacity onPress={handleBannerPress} style={styles.card}>
           <Animated.View style={{ opacity: fadeAnimation }}>
-              <Text>{currentUpdate.content}</Text>
+              <Text style={styles.updateContent}>{currentUpdate.content}</Text>
               <Text style={styles.indicatorText}>{`${currentUpdateIndex + 1} of ${updates.length}`}</Text>
           </Animated.View>
       </TouchableOpacity>
   );
 }
 
+const primaryColor = "#000"; // Black
+const backgroundColor = "#FFF"; // White
+const subtleColor = "#888"; // Subtle Gray
+
 const styles = StyleSheet.create({
   card: {
     padding: 15,
-    backgroundColor: '#fff',
-    borderRadius: 15,  // Rounded edges
+    backgroundColor: backgroundColor,
+    borderBottomWidth: 1, // subtle bottom border
+    borderRadius: 15, // Rounded edges
+
+    alignItems: "left",
+    justifyContent: "left",
+    marginVertical: 10,
     shadowColor: "#000",  // Shadow for a card effect
     shadowOffset: {
       width: 0,
@@ -61,12 +69,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,  // Elevation for Android
-    margin: 10,
+  },
+  updateContent: {
+    color: primaryColor,
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "left",
   },
   indicatorText: {
-    marginTop: 5,
+    marginTop: 10,
     fontSize: 12,
-    color: '#aaa',
+    color: subtleColor,
+    textAlign: "left",
   },
 });
 

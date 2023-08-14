@@ -120,23 +120,31 @@ export default function Home() {
 }, [highlights]);
 
 
-  return (
-    <View style={styles.container}>
-      {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
-      <Text style={styles.title}>Highlights</Text>
-  
+return (
+  <View style={styles.container}>
+
+      {/* Welcome Text */}
+      <View style={styles.welcomeTextContainer}>
+          {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
+      </View>
+
+      {/* Highlights Title */}
+      <View style={styles.titleContainer}>
+          <Text style={styles.title}>Highlights</Text>
+      </View>
+
       <View style={styles.highlightsContainer}>
-        <HighlightsCarousel
-          ref={scrollViewRef}
-          highlights={highlights}
-          onScrollBeginDrag={handleScrollBeginDrag}
-          onScrollEndDrag={handleScrollEndDrag}
-          onMomentumScrollEnd={handleMomentumScrollEnd}
-          onLongPress={deleteHighlight}
-        />
+          <HighlightsCarousel
+              ref={scrollViewRef}
+              highlights={highlights}
+              onScrollBeginDrag={handleScrollBeginDrag}
+              onScrollEndDrag={handleScrollEndDrag}
+              onMomentumScrollEnd={handleMomentumScrollEnd}
+              onLongPress={deleteHighlight}
+          />
       </View>
       <DynamicBanner updates={updates} />
-    </View>
-  );
+  </View>
+);
 }
 
