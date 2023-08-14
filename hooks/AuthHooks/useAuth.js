@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { auth } from '../../utils/Firebase';
+import { useState, useEffect } from "react";
+import { auth } from "../../utils/Firebase";
 
 const useAuth = () => {
   const [user, setUser] = useState(null);

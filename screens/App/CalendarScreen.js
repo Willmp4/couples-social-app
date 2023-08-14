@@ -6,6 +6,8 @@ import CountdownComponent from "../../components/CalendarComponents/CountdownCom
 import { useEvents } from "../../hooks/CalendarEventHooks/useCalendarEvents";
 import { useRelationshipStatus } from "../../hooks/useRelationshipStatus";
 import { useCountdownLogic } from "../../hooks/CountDownHooks/useCountdownLogic";
+import { auth } from "../../utils/Firebase";
+import useAuth from "../../hooks/AuthHooks/useAuth";
 
 export default function CalendarScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
@@ -15,8 +17,9 @@ export default function CalendarScreen() {
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
   const { events, handleCreateEvent, handleUpdateEvent, handleDeleteEvent } = useEvents();
-  const { countdownTime, isCountdownVisible, startCountdown, setIsCountdownVisible } = useCountdownLogic();
+  const { countdownTime, isCountdownVisible, startCountdown, setIsCountdownVisible } = useCountdownLogic(auth.currentUser);
   const { relationshipStatus } = useRelationshipStatus();
+  const { user } = useAuth();
   const isLongDistance = relationshipStatus === "LongDistance";
 
   const handleDayPress = (day) => {

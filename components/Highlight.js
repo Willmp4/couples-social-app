@@ -13,9 +13,7 @@ export default function Highlight({ post }) {
 
 const styles = StyleSheet.create({
   item: {
-    marginVertical: 10,
     backgroundColor: "#f8f8f8", // Light background color
-    borderRadius: 5, // Rounded corners
     shadowColor: "#000", // Shadow color
     shadowOffset: {
       // Shadow positioning
