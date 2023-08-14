@@ -3,11 +3,10 @@ import { View, Text, Dimensions, Alert } from "react-native";
 import { auth, db } from "../../utils/Firebase";
 import { collection, query, getDocs, where, doc as docRef, deleteDoc, orderBy, onSnapshot } from "firebase/firestore";
 import useAuth from "../../hooks/AuthHooks/useAuth";
-import CardDeck from "../../components/CardDeck";
 import HighlightsCarousel from "../../components/HighlightsCarousel";
 import styles from "../../styles/Home.styles";
 import useUpdates from "../../hooks/useUpdates";
-
+import DynamicBanner from "../../components/DynamicUpdateBanner";
 const { width } = Dimensions.get("window");
 const AUTO_SCROLL_INTERVAL = 4000;
 
@@ -17,7 +16,7 @@ export default function Home() {
   const [currentPosition, setCurrentPosition] = useState(0);
   const scrollIntervalRef = useRef(null);
   const { user, loading } = useAuth();
-  const { updates } = useUpdates();
+  const { updates } = useUpdates(auth.currentUser.uid);
 
   const fetchAndSetHighlightPosts = () => {
     let unsubscribe; // Initialize unsubscribe outside the if block
@@ -51,7 +50,6 @@ export default function Home() {
 
     // Cleanup: unsubscribe from updates when component unmounts
     return () => {
-      console.log("Unsubscribing from highlights");
       if (unsubscribe) {
         // Check if unsubscribe is defined before calling it
         unsubscribe();
@@ -91,6 +89,9 @@ export default function Home() {
   };
 
   const startAutoScroll = () => {
+    if (scrollIntervalRef.current) {
+      clearInterval(scrollIntervalRef.current);
+    }
     scrollIntervalRef.current = setInterval(scrollToNextHighlight, AUTO_SCROLL_INTERVAL);
   };
 
@@ -106,15 +107,30 @@ export default function Home() {
   };
 
   useEffect(() => {
-    startAutoScroll();
-    return () => clearInterval(scrollIntervalRef.current);
+    if (!scrollIntervalRef.current) {
+      startAutoScroll();
+    }
+
+    return () => {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
+    };
   }, [highlights]);
 
   return (
     <View style={styles.container}>
-      {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
-      <Text style={styles.title}>Highlights</Text>
-  
+      {/* Welcome Text */}
+      <View style={styles.welcomeTextContainer}>
+        {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
+      </View>
+
+      {/* Highlights Title */}
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Highlights</Text>
+      </View>
+
       <View style={styles.highlightsContainer}>
         <HighlightsCarousel
           ref={scrollViewRef}
@@ -125,9 +141,7 @@ export default function Home() {
           onLongPress={deleteHighlight}
         />
       </View>
-  
-      <CardDeck updates={updates} />
+      <DynamicBanner updates={updates} />
     </View>
   );
-  
 }

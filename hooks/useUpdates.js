@@ -1,36 +1,49 @@
 import { useState, useEffect } from "react";
-import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
+import { collection, query, where, orderBy, onSnapshot, limit, getDocs } from "firebase/firestore";
 import { db } from "../utils/Firebase";
+import getPartnerUsername from "../utils/getPartnerUsername";
 
-function useUpdates(numberOfUpdates = 5) {
+function useUpdates(uid, numberOfUpdates = 5) {
   const [updates, setUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
-    const updatesRef = collection(db, "updates");
-    const q = query(updatesRef, orderBy("timestamp", "desc"), limit(numberOfUpdates));
+    async function fetchUpdates() {
+      const partnerUsername = await getPartnerUsername(uid);
+      if (partnerUsername) {
+        const partnerPostsQuery = query(
+          collection(db, "updates"),
+          where("user", "==", partnerUsername),
+          orderBy("timestamp", "desc"),
+          limit(numberOfUpdates)
+        );
 
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        let fetchedUpdates = [];
-        snapshot.forEach((doc) => {
-          fetchedUpdates.push({ id: doc.id, ...doc.data() });
-        });
-        setUpdates(fetchedUpdates);
-        setLoading(false);
-      },
-      (err) => {
-        setError(err);
+        // Use onSnapshot here instead of getDocs
+        const unsubscribe = onSnapshot(
+          partnerPostsQuery,
+          (snapshot) => {
+            const partnerUpdates = snapshot.docs.map((doc) => ({
+              ...doc.data(),
+              id: doc.id,
+            }));
+            setUpdates(partnerUpdates);
+            setLoading(false);
+          },
+          (error) => {
+            setError(error);
+            setLoading(false);
+          }
+        );
+
+        // This will return the cleanup function
+        return () => unsubscribe();
+      } else {
         setLoading(false);
       }
-    );
+    }
 
-    return () => unsubscribe(); // Cleanup listener on component unmount
-  }, [numberOfUpdates]);
-
-
+    fetchUpdates();
+  }, [uid, numberOfUpdates]);
 
   return { updates, loading, error };
 }

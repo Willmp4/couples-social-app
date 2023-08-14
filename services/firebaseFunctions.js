@@ -38,6 +38,7 @@ export const addUpdateToFirestore = async (type, content) => {
     type: type,
     content: content,
     timestamp: serverTimestamp(),
+    user: auth.currentUser.displayName,
   });
   } catch (error) {
     console.error("Error adding document: ", error);
