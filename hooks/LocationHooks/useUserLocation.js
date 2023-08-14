@@ -37,25 +37,29 @@ const useUserLocation = () => {
   };
 
   useEffect(() => {
-    const userRef = doc(db, "users", auth.currentUser.uid);
-    const unsubscribe = onSnapshot(userRef, (doc) => {
-      const userData = doc.data();
-      if (userData) {
-        setCountry(userData.country);
-        setTimezone(userData.userTimezone);
-      }
-    });
+    if (auth.currentUser) {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const unsubscribe = onSnapshot(userRef, (doc) => {
+        const userData = doc.data();
+        if (userData) {
+          setCountry(userData.country);
+          setTimezone(userData.userTimezone);
+        }
+      });
 
-    return () => {
-      unsubscribe(); // Cleanup function to unsubscribe
-    };
-  }, []);
+      return () => {
+        unsubscribe(); // Cleanup function to unsubscribe
+      };
+    }
+  }, [auth.currentUser]);
 
-  // Periodic check for location change, e.g., every 15 minutes
   useEffect(() => {
-    const intervalId = setInterval(updateLocationData, 15 * 60 * 1000);
-    return () => clearInterval(intervalId);
-  }, []);
+    if (auth.currentUser) {
+      if (!country || !timezone) {
+        updateLocationData();
+      }
+    }
+  }, [auth.currentUser]);
 
   return { country, timezone };
 };

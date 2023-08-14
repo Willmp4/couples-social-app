@@ -36,7 +36,7 @@ function MyTabs({ navigation }) {
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           headerShown: false,
-          tabBarActiveTintColor: "tomato",
+          tabBarActiveTintColor: "black",
           tabBarInactiveTintColor: "gray",
           tabBarStyle: [
             {
