@@ -17,22 +17,30 @@ function useUpdates(uid, numberOfUpdates = 5) {
           orderBy("timestamp", "desc"),
           limit(numberOfUpdates)
         );
-        const partnerSnapshot = await getDocs(partnerPostsQuery);
-        // console.log("partnerSnapshot", partnerSnapshot);
-        partnerUpdates = partnerSnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setUpdates(partnerUpdates);
-        setLoading(false);
+  
+        // Use onSnapshot here instead of getDocs
+        const unsubscribe = onSnapshot(partnerPostsQuery, (snapshot) => {
+          const partnerUpdates = snapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+          }));
+          setUpdates(partnerUpdates);
+          setLoading(false);
+        }, (error) => {
+          setError(error);
+          setLoading(false);
+        });
+  
+        // This will return the cleanup function
+        return () => unsubscribe();
       } else {
-        // Handle case where partner username is not found
         setLoading(false);
       }
     }
-
+  
     fetchUpdates();
   }, [uid, numberOfUpdates]);
+  
 
   return { updates, loading, error };
 }
