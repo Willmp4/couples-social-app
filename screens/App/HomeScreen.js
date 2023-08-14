@@ -17,7 +17,7 @@ export default function Home() {
   const scrollIntervalRef = useRef(null);
   const { user, loading } = useAuth();
   const { updates } = useUpdates(auth.currentUser.uid);
- 
+
   const fetchAndSetHighlightPosts = () => {
     let unsubscribe; // Initialize unsubscribe outside the if block
 
@@ -90,10 +90,10 @@ export default function Home() {
 
   const startAutoScroll = () => {
     if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
+      clearInterval(scrollIntervalRef.current);
     }
     scrollIntervalRef.current = setInterval(scrollToNextHighlight, AUTO_SCROLL_INTERVAL);
-};
+  };
 
   const handleScrollBeginDrag = () => clearInterval(scrollIntervalRef.current);
 
@@ -108,43 +108,40 @@ export default function Home() {
 
   useEffect(() => {
     if (!scrollIntervalRef.current) {
-        startAutoScroll();
+      startAutoScroll();
     }
-    
+
     return () => {
-        if (scrollIntervalRef.current) {
-            clearInterval(scrollIntervalRef.current);
-            scrollIntervalRef.current = null;
-        }
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
     };
-}, [highlights]);
+  }, [highlights]);
 
-
-return (
-  <View style={styles.container}>
-
+  return (
+    <View style={styles.container}>
       {/* Welcome Text */}
       <View style={styles.welcomeTextContainer}>
-          {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
+        {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
       </View>
 
       {/* Highlights Title */}
       <View style={styles.titleContainer}>
-          <Text style={styles.title}>Highlights</Text>
+        <Text style={styles.title}>Highlights</Text>
       </View>
 
       <View style={styles.highlightsContainer}>
-          <HighlightsCarousel
-              ref={scrollViewRef}
-              highlights={highlights}
-              onScrollBeginDrag={handleScrollBeginDrag}
-              onScrollEndDrag={handleScrollEndDrag}
-              onMomentumScrollEnd={handleMomentumScrollEnd}
-              onLongPress={deleteHighlight}
-          />
+        <HighlightsCarousel
+          ref={scrollViewRef}
+          highlights={highlights}
+          onScrollBeginDrag={handleScrollBeginDrag}
+          onScrollEndDrag={handleScrollEndDrag}
+          onMomentumScrollEnd={handleMomentumScrollEnd}
+          onLongPress={deleteHighlight}
+        />
       </View>
       <DynamicBanner updates={updates} />
-  </View>
-);
+    </View>
+  );
 }
-

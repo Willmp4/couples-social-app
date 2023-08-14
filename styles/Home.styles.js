@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   highlightsContainer: {
     borderColor: subtleBorder,
     borderRadius: 15, // Rounded edges
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   welcomeTextContainer: {
     borderBottomWidth: 1, // subtle border at the bottom
@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginBottom: 15,
     alignItems: "left",
-    
   },
   welcomeText: {
     color: primaryColor,

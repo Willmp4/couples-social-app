@@ -5,7 +5,7 @@ const UPDATE_DISPLAY_DURATION = 5000;
 
 function DynamicUpdateBanner({ updates }) {
   const [currentUpdateIndex, setCurrentUpdateIndex] = useState(0);
-  const fadeAnimation = useRef(new Animated.Value(1)).current; 
+  const fadeAnimation = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -38,12 +38,12 @@ function DynamicUpdateBanner({ updates }) {
   if (!currentUpdate) return null;
 
   return (
-      <TouchableOpacity onPress={handleBannerPress} style={styles.card}>
-          <Animated.View style={{ opacity: fadeAnimation }}>
-              <Text style={styles.updateContent}>{currentUpdate.content}</Text>
-              <Text style={styles.indicatorText}>{`${currentUpdateIndex + 1} of ${updates.length}`}</Text>
-          </Animated.View>
-      </TouchableOpacity>
+    <TouchableOpacity onPress={handleBannerPress} style={styles.card}>
+      <Animated.View style={{ opacity: fadeAnimation }}>
+        <Text style={styles.updateContent}>{currentUpdate.content}</Text>
+        <Text style={styles.indicatorText}>{`${currentUpdateIndex + 1} of ${updates.length}`}</Text>
+      </Animated.View>
+    </TouchableOpacity>
   );
 }
 
@@ -61,14 +61,14 @@ const styles = StyleSheet.create({
     alignItems: "left",
     justifyContent: "left",
     marginVertical: 10,
-    shadowColor: "#000",  // Shadow for a card effect
+    shadowColor: "#000", // Shadow for a card effect
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,  // Elevation for Android
+    elevation: 5, // Elevation for Android
   },
   updateContent: {
     color: primaryColor,
