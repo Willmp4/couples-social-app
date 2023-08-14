@@ -16,8 +16,8 @@ export default function Home() {
   const [currentPosition, setCurrentPosition] = useState(0);
   const scrollIntervalRef = useRef(null);
   const { user, loading } = useAuth();
-  const { updates } = useUpdates();
-
+  const { updates } = useUpdates(auth.currentUser.uid);
+ 
   const fetchAndSetHighlightPosts = () => {
     let unsubscribe; // Initialize unsubscribe outside the if block
 
@@ -50,7 +50,6 @@ export default function Home() {
 
     // Cleanup: unsubscribe from updates when component unmounts
     return () => {
-      console.log("Unsubscribing from highlights");
       if (unsubscribe) {
         // Check if unsubscribe is defined before calling it
         unsubscribe();

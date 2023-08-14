@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   imageStyle: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover", // or "contain" based on your design requirements
+    resizeMode: "contain", // or "contain" based on your design requirements
   },
 });
 
