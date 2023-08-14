@@ -39,6 +39,7 @@ const ProfileScreen = ({ navigation }) => {
               setUsername(userData.username);
               setPartner(userData.partner);
               setProfilePicture(userData.profilePicture);
+              setRelationshipStatus(userData.relationshipStatus);
             }
           });
         }
@@ -91,6 +92,12 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
+  const relationshipStatusItems = [
+    { label: "Long Distance", value: "LongDistance" },
+    { label: "Living Together", value: "LivingTogether" },
+    { label: "Married", value: "Married" },
+  ];
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -99,18 +106,22 @@ const ProfileScreen = ({ navigation }) => {
         <Input label="Last Name" placeholder="Doe" value={lastName} onChangeText={setLastName} inputContainerStyle={styles.input} />
         <Input label="Username" placeholder="Username" value={username} onChangeText={setUsername} inputContainerStyle={styles.input} />
         <Input label="Partner" placeholder="Partner" value={partner} onChangeText={setPartner} inputContainerStyle={styles.input} />
-        <ProfilePicture profilePicture={profilePicture} setProfilePicture={setProfilePicture} />
-        <Text style={styles.label}>Relationship Status</Text>
+        <Input
+          label="Relationship Status"
+          containerStyle={{ paddingHorizontal: 0 }} // Remove default padding
+          inputContainerStyle={{ borderBottomWidth: 0, paddingBottom: 0 }} // Remove the default underline and padding
+          inputStyle={{ display: "none" }} // Hide the default text input
+          labelStyle={{ color: "grey" }}
+        />
         <RNPickerSelect
           onValueChange={(value) => setRelationshipStatus(value)}
-          items={[
-            { label: "Long Distance", value: "LongDistance" },
-            { label: "living together", value: "living together" },
-            { label: "Married", value: "Married" },
-          ]}
-          style={pickerStyles} // You will need to define this style
+          items={relationshipStatusItems}
+          style={pickerStyles}
           value={relationshipStatus}
+          useNativeAndroidPickerStyle={false}
+          placeholder={{ label: relationshipStatus || "Select...", value: null }}
         />
+        <ProfilePicture profilePicture={profilePicture} setProfilePicture={setProfilePicture} />
         <Button icon={<Icon name="upload" size={20} color="white" />} title="Update" onPress={Submit} buttonStyle={styles.button} />
         <Logout />
       </ScrollView>
@@ -121,10 +132,9 @@ const ProfileScreen = ({ navigation }) => {
 const pickerStyles = StyleSheet.create({
   inputIOS: {
     fontSize: 16,
-    paddingVertical: 12,
     paddingHorizontal: 10,
+    paddingVertical: 12,
     borderWidth: 1,
-    borderColor: "gray",
     borderRadius: 4,
     color: "black",
     paddingRight: 30, // to ensure the text is never behind the icon
@@ -134,7 +144,6 @@ const pickerStyles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderWidth: 0.5,
-    borderColor: "gray",
     borderRadius: 8,
     color: "black",
     paddingRight: 30, // to ensure the text is never behind the icon
@@ -144,6 +153,12 @@ const pickerStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  inputLabel: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 5,
+    marginLeft: 10,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -163,8 +178,8 @@ const styles = StyleSheet.create({
   button: {
     width: 200,
     marginTop: 20,
-    //Grey
-    backgroundColor: "#808080",
+    borderRadius: 10,
+    backgroundColor: "#000",
   },
   image: {
     //Make the image a circle
