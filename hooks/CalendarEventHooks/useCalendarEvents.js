@@ -17,7 +17,7 @@ export const useEvents = () => {
   const handleCreateEvent = async (newEventTitle, selectedDate) => {
     await createEvent({ title: newEventTitle, date: selectedDate });
 
-    await addUpdateToFirestore("event", `New event created: ${selectedDate} - ${newEventTitle}}`);
+    await addUpdateToFirestore("event", `New event created: ${newEventTitle}`);
 
     fetchEvents();
   };

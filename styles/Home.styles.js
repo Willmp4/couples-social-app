@@ -4,13 +4,14 @@ const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
+    
     flex: 1,
     paddingTop: 30,
     paddingHorizontal: 15, // Increased the horizontal padding
     backgroundColor: "#f8f8f8",
   },
   highlightsContainer: {
-    borderWidth: 1,
+
     borderColor: "#e0e0e0",
     borderRadius: 15,  // Increase the border radius value for a more rounded appearance
     // marginVertical: 10,
@@ -18,13 +19,13 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     color: "#333",
-    fontSize: 18,  // Slightly reduced the font size
-    fontWeight: "500", // Adjusted the weight
+    fontSize: 18,  
+    fontWeight: "500",
     marginBottom: 10,
   },
   title: {
     fontWeight: "bold",
-    fontSize: 28,  // Slightly reduced the font size
+    fontSize: 28, 
     marginBottom: 20,
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -32,6 +33,7 @@ const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: "#f5f5f5",
     overflow: "hidden",
+    
   },
   slide: {
     width,
@@ -44,12 +46,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 2,
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
   },
   imageStyle: {
     width: "100%",
     height: "100%",
-    resizeMode: "contain", // or "contain" based on your design requirements
+    resizeMode: "cover", // or "contain" based on your design requirements
   },
 });
 
