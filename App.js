@@ -11,9 +11,11 @@ import SignUp from "./screens/Auth/SignUpScreen";
 import ForgotPassword from "./screens/Auth/ForgotPasswordScreen";
 import MyPostsScreen from "./screens/App/MyPostsScreen";
 import CouplesDashBoard from "./screens/App/CouplesDashboardScreen";
-import Toast from 'react-native-toast-message'
+import Toast from "react-native-toast-message";
 import Logout from "./components/Logout";
 import useAuth from "./hooks/AuthHooks/useAuth";
+import * as eva from "@eva-design/eva";
+import { ApplicationProvider, Layout, Text } from "@ui-kitten/components";
 
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
@@ -55,26 +57,26 @@ function MyTabs({ navigation }) {
 }
 
 export default function App() {
-  const { user, loading } = useAuth()
+  const { user, loading } = useAuth();
 
   return (
-    <NavigationContainer>
-      {user ? (
-        <AppStack.Navigator screenOptions={{ headerShown: false }}>
-          <AppStack.Screen name="MyTabs" component={MyTabs} />
-          <AppStack.Screen name="MyProfile" component={ProfileScreen} />
-          <AppStack.Screen name="Logout" component={Logout} />
-        </AppStack.Navigator>
-      ) : (
-        <AuthStack.Navigator screenOptions={{ headerShown: false }}>
-          <AuthStack.Screen name="LogIn" component={LogIn} />
-          <AuthStack.Screen name="SignUp" component={SignUp} />
-          <AuthStack.Screen name="ForgotPassword" component={ForgotPassword} />
-        </AuthStack.Navigator>
-      )}
-      <Toast />
-    </NavigationContainer>
+    <ApplicationProvider {...eva} theme={eva.light}>
+      <NavigationContainer>
+        {user ? (
+          <AppStack.Navigator screenOptions={{ headerShown: false }}>
+            <AppStack.Screen name="MyTabs" component={MyTabs} />
+            <AppStack.Screen name="MyProfile" component={ProfileScreen} />
+            <AppStack.Screen name="Logout" component={Logout} />
+          </AppStack.Navigator>
+        ) : (
+          <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+            <AuthStack.Screen name="LogIn" component={LogIn} />
+            <AuthStack.Screen name="SignUp" component={SignUp} />
+            <AuthStack.Screen name="ForgotPassword" component={ForgotPassword} />
+          </AuthStack.Navigator>
+        )}
+        <Toast />
+      </NavigationContainer>
+    </ApplicationProvider>
   );
 }
-
-
