@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Dimensions, Alert } from "react-native";
+import { View, Dimensions, Alert } from "react-native";
 import { auth, db } from "../../utils/Firebase";
 import { collection, query, getDocs, where, doc as docRef, deleteDoc, orderBy, onSnapshot } from "firebase/firestore";
 import useAuth from "../../hooks/AuthHooks/useAuth";
@@ -7,6 +7,7 @@ import HighlightsCarousel from "../../components/HighlightsCarousel";
 import styles from "../../styles/Home.styles";
 import useUpdates from "../../hooks/useUpdates";
 import DynamicBanner from "../../components/DynamicUpdateBanner";
+import { Layout, Text, Button} from "@ui-kitten/components";
 const { width } = Dimensions.get("window");
 const AUTO_SCROLL_INTERVAL = 4000;
 
@@ -120,18 +121,18 @@ export default function Home() {
   }, [highlights]);
 
   return (
-    <View style={styles.container}>
+    <Layout style={styles.container}>
       {/* Welcome Text */}
-      <View style={styles.welcomeTextContainer}>
+      <Layout style={styles.welcomeTextContainer}>
         {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
-      </View>
+      </Layout>
 
       {/* Highlights Title */}
-      <View style={styles.titleContainer}>
+      <Layout style={styles.titleContainer}>
         <Text style={styles.title}>Highlights</Text>
-      </View>
+      </Layout>
 
-      <View style={styles.highlightsContainer}>
+      <Layout style={styles.highlightsContainer}>
         <HighlightsCarousel
           ref={scrollViewRef}
           highlights={highlights}
@@ -140,8 +141,9 @@ export default function Home() {
           onMomentumScrollEnd={handleMomentumScrollEnd}
           onLongPress={deleteHighlight}
         />
-      </View>
+      </Layout>
+
       <DynamicBanner updates={updates} />
-    </View>
+    </Layout>
   );
 }
