@@ -36,7 +36,7 @@ const OurTime = () => {
   // Modify the return statement to conditionally render based on relationshipStatus
   return (
     <View>
-      {relationshipStatus === "Longdistant" && (
+      {relationshipStatus === "LongDistance" && (
         <>
           <Text style={styles.title}>Our Time</Text>
           <Text style={styles.title}>Country: {country}</Text>
