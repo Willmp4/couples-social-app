@@ -25,10 +25,13 @@ export default function Login() {
   const [error, setError] = useState("");
   const [animationFinished, setAnimationFinished] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
+  const [showSecondAnimation, setShowSecondAnimation] = useState(false); // New state for second animation
 
   const onAnimationFinish = () => {
     setAnimationFinished(true);
     setShowLoginForm(true);
+    // Trigger the second animation
+    setShowSecondAnimation(true);
   };
   const validateInput = () => {
     setError("");
@@ -67,13 +70,29 @@ export default function Login() {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
       <LottieView
-        source={require("../../assets/magic-heart.json")}
+        source={require("../../assets/heart.json")}
         autoPlay
         loop={false}
         onAnimationFinish={onAnimationFinish}
-        style={{ flex: 1, position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} // Make LottieView fill entire screen
+        style={{ flex: 1, position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
+      {showSecondAnimation && (
+        <LottieView
+          source={require("../../assets/i_love_you.json")} // Path to your second animation JSON
+          autoPlay
+          loop={true}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 450,
+            zIndex: 0, // Ensure it's above other content
+          }}
+          onAnimationFinish={() => setShowSecondAnimation(false)} // Optionally hide after playing
+        />
+      )}
       {showLoginForm && (
         <View style={{ flex: 1 }}>
           <ImageBackground style={styles.backgroundImage}>
