@@ -1,17 +1,35 @@
-import React, { useState } from "react";
-import { Keyboard, KeyboardAvoidingView, ImageBackground, Image, StyleSheet, View, TextInput, Text, TouchableOpacity, Alert, Platform } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  KeyboardAvoidingView,
+  ImageBackground,
+  Image,
+} from "react-native";
+import LottieView from "lottie-react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../utils/Firebase";
 import { useNavigation } from "@react-navigation/native";
 import { doc, getDoc } from "firebase/firestore";
-import styles from "../../styles/Login.styles"
+import styles from "../../styles/Login.styles";
 
 export default function Login() {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [animationFinished, setAnimationFinished] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
 
+  const onAnimationFinish = () => {
+    setAnimationFinished(true);
+    setShowLoginForm(true);
+  };
   const validateInput = () => {
     setError("");
     if (email.trim() === "" || password.trim() === "") {
@@ -37,7 +55,7 @@ export default function Login() {
         if (docSnap.exists() && docSnap.data().isNewUser) {
           navigation.navigate("SignUp");
         } else {
-          navigation.navigate('MyTabs', {screen: 'Home'})
+          navigation.navigate("MyTabs", { screen: "Home" });
         }
       })
       .catch((error) => {
@@ -47,34 +65,56 @@ export default function Login() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.backgroundImage}
-    >
-      <ImageBackground style={styles.backgroundImage}>
-        <View style={styles.logoContainer}>
-          <Image source={require('../../assets/favicon.png')} style={styles.logo} />
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <LottieView
+        source={require("../../assets/magic-heart.json")}
+        autoPlay
+        loop={false}
+        onAnimationFinish={onAnimationFinish}
+        style={{ flex: 1, position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }} // Make LottieView fill entire screen
+      />
+
+      {showLoginForm && (
+        <View style={{ flex: 1 }}>
+          <ImageBackground style={styles.backgroundImage}>
+            <View style={styles.logoContainer}>
+              {/* <Image source={require("../../assets/favicon.png")} style={styles.logo} /> */}
+            </View>
+            <View style={styles.container}>
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                placeholderTextColor="#000"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                placeholderTextColor="#000"
+              />
+              <Text style={styles.errorText}>{error}</Text>
+              <TouchableOpacity style={styles.button} onPress={login}>
+                <Text style={styles.buttonText}>Login</Text>
+              </TouchableOpacity>
+              <View style={styles.footerContainer}>
+                <Text>
+                  Haven't got an account?{" "}
+                  <Text style={styles.linkText} onPress={() => navigation.navigate("SignUp")}>
+                    SignUp
+                  </Text>
+                </Text>
+                <Text style={styles.forgotPassword} onPress={() => navigation.navigate("ForgotPassword")}>
+                  Forgot password?
+                </Text>
+              </View>
+            </View>
+          </ImageBackground>
         </View>
-        <View style={styles.container}>
-          <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} placeholderTextColor="#000" />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            placeholderTextColor="#000"
-          />
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.button} onPress={login}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-          <View style={styles.footerContainer}>
-            <Text>Haven't got an account? <Text style={styles.linkText} onPress={() => navigation.navigate("SignUp")}>SignUp</Text></Text>
-            <Text style={styles.forgotPassword} onPress={() => navigation.navigate("ForgotPassword")}>Forgot password?</Text>
-          </View>
-        </View>
-      </ImageBackground>
+      )}
     </KeyboardAvoidingView>
   );
 }
