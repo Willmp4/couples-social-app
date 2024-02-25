@@ -13,7 +13,7 @@ import MyPostsScreen from "./screens/App/MyPostsScreen";
 import CouplesDashBoard from "./screens/App/CouplesDashboardScreen";
 import Toast from 'react-native-toast-message'
 import Logout from "./components/Logout";
-import useAuth from "./hooks/useAuth";
+import useAuth from "./hooks/AuthHooks/useAuth";
 
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
@@ -36,7 +36,7 @@ function MyTabs({ navigation }) {
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           headerShown: false,
-          tabBarActiveTintColor: "tomato",
+          tabBarActiveTintColor: "black",
           tabBarInactiveTintColor: "gray",
           tabBarStyle: [
             {

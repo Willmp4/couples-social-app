@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import moment from "moment-timezone";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
-import { db } from "../utils/Firebase";
+import { db } from "../../utils/Firebase";
 
-const usePartnerTimezone = (partner) => {
+const usePartnerTimezone = (partner, isAuthenticated) => {
   const [partnerTimezone, setPartnerTimezone] = useState("");
   const [partnerTime, setPartnerTime] = useState("");
 
   useEffect(() => {
+    let unsubscribe; // Declare outside of the async function
+
     const fetchPartnerTimezone = async () => {
-      if (partner) {
+      if (partner && isAuthenticated) {
         const usernameRef = doc(db, "usernames", partner);
         const usernameSnap = await getDoc(usernameRef);
 
@@ -21,7 +23,8 @@ const usePartnerTimezone = (partner) => {
         const partnerUid = usernameSnap.data().uid;
 
         const partnerRef = doc(db, "users", partnerUid);
-        const unsubscribe = onSnapshot(partnerRef, (doc) => {
+        unsubscribe = onSnapshot(partnerRef, (doc) => {
+          // Assign to variable
           if (doc.exists()) {
             const partnerData = doc.data();
             if (partnerData.userTimezone) {
@@ -29,13 +32,13 @@ const usePartnerTimezone = (partner) => {
             }
           }
         });
-
-        return () => unsubscribe();
       }
     };
 
     fetchPartnerTimezone();
-  }, [partner]);
+
+    return () => unsubscribe && unsubscribe(); // Check if it's defined
+  }, [partner, isAuthenticated]);
 
   useEffect(() => {
     const updatePartnerTime = () => {
@@ -46,7 +49,7 @@ const usePartnerTimezone = (partner) => {
     };
 
     updatePartnerTime();
-    const intervalId = setInterval(updatePartnerTime, 1000);
+    const intervalId = setInterval(updatePartnerTime, 6000);
 
     return () => clearInterval(intervalId);
   }, [partnerTimezone]);

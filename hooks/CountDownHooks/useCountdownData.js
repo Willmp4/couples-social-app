@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import getPartnerUsername from "../utils/getPartnerUsername";
+import getPartnerUsername from "../../utils/getPartnerUsername";
 import { doc, getDoc } from "firebase/firestore";
-import { db, auth } from "../utils/Firebase";
-import { useRelationshipStatus } from "./useRelationshipStatus";
+import { db, auth } from "../../utils/Firebase";
+import { useRelationshipStatus } from "../useRelationshipStatus";
 import { setDoc } from "firebase/firestore";
 
-export const useCountdownData = () => {
+export const useCountdownData = (isAuth) => {
   const [countdownEnd, setCountdownEnd] = useState(null);
   const [isCountdownVisible, setIsCountdownVisible] = useState(false);
   const { relationshipStatus } = useRelationshipStatus();
@@ -55,16 +55,20 @@ export const useCountdownData = () => {
   };
 
   useEffect(() => {
+    let isMounted = true; // create a flag
+    if(isMounted && isAuth) {
     const checkLongDistance = async () => {
-      if (relationshipStatus === "LongDistance") {
+      if (relationshipStatus === "LongDistance" && isMounted && isAuth) {
+        // use this flag before calling async function
         await fetchCountdownEndDate();
-        console.log("countdownEnd", countdownEnd);
       }
     };
-    setIsCountdownVisible(true);
-
     checkLongDistance();
-  }, [relationshipStatus]);
+  }
+    return () => {
+      isMounted = false; // set it to false when component unmounts
+    };
+  }, [relationshipStatus, isAuth]);
 
   return { countdownEnd, updateCountdownDate, isCountdownVisible, setIsCountdownVisible };
 };
