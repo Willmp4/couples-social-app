@@ -20,7 +20,7 @@ const Logout = () => {
       icon={<Icon name="sign-out" size={20} color="white" />}
       title="Log Out"
       onPress={logout}
-      buttonStyle={{ width: 200, marginTop: 20, backgroundColor: "#808080" }}
+      buttonStyle={{ width: 200, marginTop: 20, backgroundColor: "#000", borderRadius: 10 }}
     />
   );
 };

@@ -3,10 +3,10 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { auth, db } from "../../utils/Firebase";
 import { collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
-import useUserLocation from "../../hooks/useUserLocation";
-import useUserTimezone from "../../hooks/useUserTimeZone";
-import useAuth from "../../hooks/useAuth";
-import usePartnerTimezone from "../../hooks/usePartnerTimeZone";
+import useUserLocation from "../../hooks/LocationHooks/useUserLocation";
+import useUserTimezone from "../../hooks/LocationHooks/useUserTimeZone";
+import useAuth from "../../hooks/AuthHooks/useAuth";
+import usePartnerTimezone from "../../hooks/LocationHooks/usePartnerTimeZone";
 
 const OurTime = () => {
   const { user, loading } = useAuth();
@@ -15,7 +15,7 @@ const OurTime = () => {
 
   useEffect(() => {
     const fetchUserDetails = async () => {
-      if (user) {
+      if (user && auth.currentUser) {
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -31,7 +31,7 @@ const OurTime = () => {
 
   const { country, timezone } = useUserLocation();
   const currentTime = useUserTimezone(timezone);
-  const { partnerTimezone, partnerTime } = usePartnerTimezone(partner);
+  const { partnerTimezone, partnerTime } = usePartnerTimezone(partner, auth.currentUser);
 
   // Modify the return statement to conditionally render based on relationshipStatus
   return (

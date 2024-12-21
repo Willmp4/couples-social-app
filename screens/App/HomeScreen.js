@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Dimensions, Alert } from "react-native";
 import { auth, db } from "../../utils/Firebase";
 import { collection, query, getDocs, where, doc as docRef, deleteDoc, orderBy, onSnapshot } from "firebase/firestore";
-import useAuth from "../../hooks/useAuth";
+import useAuth from "../../hooks/AuthHooks/useAuth";
 import HighlightsCarousel from "../../components/HighlightsCarousel";
 import styles from "../../styles/Home.styles";
-
+import useUpdates from "../../hooks/useUpdates";
+import DynamicBanner from "../../components/DynamicUpdateBanner";
 const { width } = Dimensions.get("window");
 const AUTO_SCROLL_INTERVAL = 4000;
 
@@ -15,39 +16,46 @@ export default function Home() {
   const [currentPosition, setCurrentPosition] = useState(0);
   const scrollIntervalRef = useRef(null);
   const { user, loading } = useAuth();
+  const { updates } = useUpdates(auth.currentUser.uid);
 
   const fetchAndSetHighlightPosts = () => {
+    let unsubscribe; // Initialize unsubscribe outside the if block
+
     const highlightsQuery = query(
       collection(db, "highlights"),
       orderBy("created_at", "desc") // assuming posts have a 'createdAt' field
     );
 
-    const unsubscribe = onSnapshot(highlightsQuery, (querySnapshot) => {
-      const posts = [];
-      querySnapshot.forEach((doc) => {
-        posts.push({
-          id: doc.id,
-          ...doc.data(),
+    if (auth.currentUser) {
+      unsubscribe = onSnapshot(highlightsQuery, (querySnapshot) => {
+        const posts = [];
+        querySnapshot.forEach((doc) => {
+          posts.push({
+            id: doc.id,
+            ...doc.data(),
+          });
         });
-      });
 
-      setHighlights(posts);
-    });
+        setHighlights(posts);
+      });
+    }
 
     // Return the unsubscribe function to ensure we stop listening when the component is unmounted
     return unsubscribe;
   };
 
   useEffect(() => {
-    // store the unsubscribe function returned by fetchAndSetHighlightPosts
+    // Store the unsubscribe function returned by fetchAndSetHighlightPosts
     const unsubscribe = fetchAndSetHighlightPosts();
 
     // Cleanup: unsubscribe from updates when component unmounts
     return () => {
-      console.log("Unsubscribing from highlights");
-      unsubscribe();
+      if (unsubscribe) {
+        // Check if unsubscribe is defined before calling it
+        unsubscribe();
+      }
     };
-  }, [db]);
+  }, [db, auth.currentUser]);
 
   const deleteHighlight = async (blogPostId) => {
     try {
@@ -81,6 +89,9 @@ export default function Home() {
   };
 
   const startAutoScroll = () => {
+    if (scrollIntervalRef.current) {
+      clearInterval(scrollIntervalRef.current);
+    }
     scrollIntervalRef.current = setInterval(scrollToNextHighlight, AUTO_SCROLL_INTERVAL);
   };
 
@@ -96,26 +107,41 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchAndSetHighlightPosts();
-  }, [db]);
+    if (!scrollIntervalRef.current) {
+      startAutoScroll();
+    }
 
-  useEffect(() => {
-    startAutoScroll();
-    return () => clearInterval(scrollIntervalRef.current);
+    return () => {
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
+    };
   }, [highlights]);
 
   return (
     <View style={styles.container}>
-      {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
-      <Text style={styles.title}>Highlights</Text>
-      <HighlightsCarousel
-        ref={scrollViewRef}
-        highlights={highlights}
-        onScrollBeginDrag={handleScrollBeginDrag}
-        onScrollEndDrag={handleScrollEndDrag}
-        onMomentumScrollEnd={handleMomentumScrollEnd}
-        onLongPress={deleteHighlight}
-      />
+      {/* Welcome Text */}
+      <View style={styles.welcomeTextContainer}>
+        {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
+      </View>
+
+      {/* Highlights Title */}
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Highlights</Text>
+      </View>
+
+      <View style={styles.highlightsContainer}>
+        <HighlightsCarousel
+          ref={scrollViewRef}
+          highlights={highlights}
+          onScrollBeginDrag={handleScrollBeginDrag}
+          onScrollEndDrag={handleScrollEndDrag}
+          onMomentumScrollEnd={handleMomentumScrollEnd}
+          onLongPress={deleteHighlight}
+        />
+      </View>
+      <DynamicBanner updates={updates} />
     </View>
   );
 }
