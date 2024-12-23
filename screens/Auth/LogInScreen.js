@@ -79,7 +79,7 @@ export default function Login() {
 
       {showSecondAnimation && (
         <LottieView
-          source={require("../../assets/i_love_you.json")} // Path to your second animation JSON
+          source={require("../../assets/i_love_you.json")}
           autoPlay
           loop={true}
           style={{
@@ -88,16 +88,16 @@ export default function Login() {
             left: 0,
             right: 0,
             bottom: 450,
-            zIndex: 0, // Ensure it's above other content
+            zIndex: 2, // Increased zIndex to appear above snowfall
           }}
-          onAnimationFinish={() => setShowSecondAnimation(false)} // Optionally hide after playing
+          onAnimationFinish={() => setShowSecondAnimation(false)}
         />
       )}
+
       {showLoginForm && (
         <View style={{ flex: 1 }}>
           <ImageBackground style={styles.backgroundImage}>
             <View style={styles.logoContainer}>
-              {/* <Image source={require("../../assets/favicon.png")} style={styles.logo} /> */}
             </View>
             <View style={styles.container}>
               <TextInput
@@ -121,12 +121,12 @@ export default function Login() {
               </TouchableOpacity>
               <View style={styles.footerContainer}>
                 <Text>
-                  Haven't got an account?{" "}
-                  <Text style={styles.linkText} onPress={() => navigation.navigate("SignUp")}>
+                  Haven't got an account?{' '}
+                  <Text style={styles.linkText} onPress={() => navigation.navigate('SignUp')}>
                     SignUp
                   </Text>
                 </Text>
-                <Text style={styles.forgotPassword} onPress={() => navigation.navigate("ForgotPassword")}>
+                <Text style={styles.forgotPassword} onPress={() => navigation.navigate('ForgotPassword')}>
                   Forgot password?
                 </Text>
               </View>

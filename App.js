@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Ionicons } from "@expo/vector-icons";
+import LottieView from "lottie-react-native";
+import { View } from "react-native";
 import HomeScreen from "./screens/App/HomeScreen";
-// import MakePost from "./screens/BlogPostImage";
 import ProfileScreen from "./screens/App/ProfileScreen";
 import LogIn from "./screens/Auth/LogInScreen";
 import SignUp from "./screens/Auth/SignUpScreen";
@@ -56,25 +56,38 @@ function MyTabs({ navigation }) {
 
 export default function App() {
   const { user, loading } = useAuth()
-
   return (
-    <NavigationContainer>
-      {user ? (
-        <AppStack.Navigator screenOptions={{ headerShown: false }}>
-          <AppStack.Screen name="MyTabs" component={MyTabs} />
-          <AppStack.Screen name="MyProfile" component={ProfileScreen} />
-          <AppStack.Screen name="Logout" component={Logout} />
-        </AppStack.Navigator>
-      ) : (
-        <AuthStack.Navigator screenOptions={{ headerShown: false }}>
-          <AuthStack.Screen name="LogIn" component={LogIn} />
-          <AuthStack.Screen name="SignUp" component={SignUp} />
-          <AuthStack.Screen name="ForgotPassword" component={ForgotPassword} />
-        </AuthStack.Navigator>
-      )}
-      <Toast />
-    </NavigationContainer>
+    <View style={{ flex: 1 }}>
+      <LottieView
+        source={require('./assets/snowfall-animation.json')}
+        autoPlay
+        loop
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 1,
+          pointerEvents: 'none'
+        }}
+      />
+      <NavigationContainer>
+        {user ? (
+          <AppStack.Navigator screenOptions={{ headerShown: false }}>
+            <AppStack.Screen name="MyTabs" component={MyTabs} />
+            <AppStack.Screen name="MyProfile" component={ProfileScreen} />
+            <AppStack.Screen name="Logout" component={Logout} />
+          </AppStack.Navigator>
+        ) : (
+          <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+            <AuthStack.Screen name="LogIn" component={LogIn} />
+            <AuthStack.Screen name="SignUp" component={SignUp} />
+            <AuthStack.Screen name="ForgotPassword" component={ForgotPassword} />
+          </AuthStack.Navigator>
+        )}
+        <Toast />
+      </NavigationContainer>
+    </View>
   );
 }
-
-

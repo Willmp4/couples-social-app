@@ -25,6 +25,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     alignItems: "left",
   },
+  christmasSectionContainer: {
+    marginBottom: 20,
+  },
   welcomeText: {
     color: primaryColor,
     fontSize: 18,

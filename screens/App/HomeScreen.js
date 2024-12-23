@@ -1,5 +1,6 @@
+//homescreen.js
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Dimensions, Alert } from "react-native";
+import { View, Text, Dimensions, Alert, ScrollView } from "react-native";
 import { auth, db } from "../../utils/Firebase";
 import { collection, query, getDocs, where, doc as docRef, deleteDoc, orderBy, onSnapshot } from "firebase/firestore";
 import useAuth from "../../hooks/AuthHooks/useAuth";
@@ -7,6 +8,7 @@ import HighlightsCarousel from "../../components/HighlightsCarousel";
 import styles from "../../styles/Home.styles";
 import useUpdates from "../../hooks/useUpdates";
 import DynamicBanner from "../../components/DynamicUpdateBanner";
+import ChristmasSurprise from "../../components/xmas-update/ChristmasSurprise";
 const { width } = Dimensions.get("window");
 const AUTO_SCROLL_INTERVAL = 4000;
 
@@ -23,7 +25,7 @@ export default function Home() {
 
     const highlightsQuery = query(
       collection(db, "highlights"),
-      orderBy("created_at", "desc") // assuming posts have a 'createdAt' field
+      orderBy("created_at", "desc")
     );
 
     if (auth.currentUser) {
@@ -40,7 +42,6 @@ export default function Home() {
       });
     }
 
-    // Return the unsubscribe function to ensure we stop listening when the component is unmounted
     return unsubscribe;
   };
 
@@ -48,7 +49,6 @@ export default function Home() {
     // Store the unsubscribe function returned by fetchAndSetHighlightPosts
     const unsubscribe = fetchAndSetHighlightPosts();
 
-    // Cleanup: unsubscribe from updates when component unmounts
     return () => {
       if (unsubscribe) {
         // Check if unsubscribe is defined before calling it
@@ -121,27 +121,43 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      {/* Welcome Text */}
-      <View style={styles.welcomeTextContainer}>
-        {user ? <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text> : <Text>Welcome</Text>}
-      </View>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Welcome Text */}
+        <View style={styles.welcomeTextContainer}>
+          {user ? (
+            <Text style={styles.welcomeText}>Welcome, {user.displayName}</Text>
+          ) : (
+            <Text>Welcome</Text>
+          )}
+        </View>
 
-      {/* Highlights Title */}
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>Highlights</Text>
-      </View>
+        {/* Christmas Surprise Section */}
+        <View style={styles.christmasSectionContainer}>
+          <ChristmasSurprise />
+        </View>
 
-      <View style={styles.highlightsContainer}>
-        <HighlightsCarousel
-          ref={scrollViewRef}
-          highlights={highlights}
-          onScrollBeginDrag={handleScrollBeginDrag}
-          onScrollEndDrag={handleScrollEndDrag}
-          onMomentumScrollEnd={handleMomentumScrollEnd}
-          onLongPress={deleteHighlight}
-        />
-      </View>
-      <DynamicBanner updates={updates} />
+        {/* Highlights Section */}
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Highlights</Text>
+        </View>
+
+        <View style={styles.highlightsContainer}>
+          <HighlightsCarousel
+            ref={scrollViewRef}
+            highlights={highlights}
+            onScrollBeginDrag={handleScrollBeginDrag}
+            onScrollEndDrag={handleScrollEndDrag}
+            onMomentumScrollEnd={handleMomentumScrollEnd}
+            onLongPress={deleteHighlight}
+          />
+        </View>
+
+        <DynamicBanner updates={updates} />
+      </ScrollView>
     </View>
   );
 }
