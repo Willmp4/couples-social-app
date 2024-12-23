@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   Platform,
   KeyboardAvoidingView,
   ImageBackground,
-  Image,
+  Animated,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -25,14 +25,23 @@ export default function Login() {
   const [error, setError] = useState("");
   const [animationFinished, setAnimationFinished] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
-  const [showSecondAnimation, setShowSecondAnimation] = useState(false); // New state for second animation
+  const [showSecondAnimation, setShowSecondAnimation] = useState(false);
+
+  // Create an animated value for santa's opacity
+  const santaOpacity = useRef(new Animated.Value(0)).current;
 
   const onAnimationFinish = () => {
     setAnimationFinished(true);
     setShowLoginForm(true);
-    // Trigger the second animation
+    // Trigger the second animation with fade in
     setShowSecondAnimation(true);
+    Animated.timing(santaOpacity, {
+      toValue: 1,
+      duration: 1000, // Adjust duration as needed
+      useNativeDriver: true,
+    }).start();
   };
+
   const validateInput = () => {
     setError("");
     if (email.trim() === "" || password.trim() === "") {
@@ -78,20 +87,24 @@ export default function Login() {
       />
 
       {showSecondAnimation && (
-        <LottieView
-          source={require("../../assets/i_love_you.json")}
-          autoPlay
-          loop={true}
+        <Animated.View
           style={{
+            opacity: santaOpacity,
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             bottom: 450,
-            zIndex: 2, // Increased zIndex to appear above snowfall
+            zIndex: 2,
           }}
-          onAnimationFinish={() => setShowSecondAnimation(false)}
-        />
+        >
+          <LottieView
+            source={require("../../assets/santa-in-the-sky.json")}
+            autoPlay
+            loop={true}
+            style={{ flex: 1 }}
+          />
+        </Animated.View>
       )}
 
       {showLoginForm && (

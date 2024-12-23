@@ -1,49 +1,214 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, Animated, Dimensions, StyleSheet, Modal } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Animated, Dimensions, StyleSheet, Modal, Platform } from 'react-native';
 import LottieView from 'lottie-react-native';
 import JSONAnimationPlayer from '../../utils/JSONAnimationPlayer';
 
 const { width, height } = Dimensions.get('window');
 
 const ChristmasSurprise = () => {
+  // State management
   const [isQuizVisible, setIsQuizVisible] = useState(false);
   const [hasWon, setHasWon] = useState(false);
+  const [tooEarlyModalVisible, setTooEarlyModalVisible] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState('');
+  const [timeUntilChristmas, setTimeUntilChristmas] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Animations
   const [shakeAnimation] = useState(new Animated.Value(0));
   const slideAnimation = useRef(new Animated.Value(height)).current;
   const scaleAnimation = useRef(new Animated.Value(0.8)).current;
   const opacityAnimation = useRef(new Animated.Value(0)).current;
+  const bounceAnimation = useRef(new Animated.Value(1)).current;
 
+  // Quiz data
   const questions = [{
     question: "What were you wearing when we first kissed?",
     answer: "Green Rompa",
     options: ["Onesie", "Black Dress", "Green Rompa", "Nothing;)"]
   }];
 
-  const handlePresentPress = () => {
-    setIsQuizVisible(true);
-    requestAnimationFrame(() => {
-      Animated.parallel([
-        Animated.spring(slideAnimation, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 50,
-          friction: 7
-        }),
-        Animated.timing(opacityAnimation, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true
-        }),
-        Animated.spring(scaleAnimation, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 50,
-          friction: 7
-        })
-      ]).start();
-    });
+  // Funny messages for different time periods
+  const messages = {
+    tooEarly: [
+      "Ho ho hold your horses! 🎅 Santa hasn't cleared you for present opening yet!",
+      "Nice try, you sneaky elf! 🧝‍♂️ Come back on Christmas Day!",
+      "Sorry, this present is still charging... Check back on Dec 25th! ⚡🎁",
+      "Error 25/12: Present not found. Please try again on Christmas Day! 🎄",
+      "Looks like someone's on the 'Too Early' list! 📝 See you on Christmas!",
+      "Present loading... ETA: December 25th 🔄",
+      "Santa's still wrapping this one! 🎁",
+    ],
+    almostThere: [
+      "Almost there! Just a few more sleeps! 😴",
+      "The elves are putting on the finishing touches! ✨",
+      "Santa's GPS is locked on your location! 🎅📍",
+      "Ho ho hold your horses! 🎅 Santa hasn't cleared you for present opening yet!",
+      "Nice try, you sneaky elf! 🧝‍♂️ Come back on Christmas Day!",
+      "Nice try Shoonks but its not time yet! 🎅",
+      "Looks like someone's on the 'Too Early' list! 📝 See you on Christmas!",
+      "Santa's still wrapping this one! 🎁",
+    ],
+    dayBefore: [
+      "Tomorrow's the big day! Can you wait just ONE more day? 🎄",
+      "Santa's sleigh is being loaded! Check back tomorrow bubba! 🛷",
+      "24 hours to go! The anticipation is killing me too! ⏰",
+    ]
   };
 
+  // Date checking logic
+  const getChristmasStatus = () => {
+    const now = new Date();
+    const christmas = new Date(now.getFullYear(), 11, 25); // Month is 0-based, so 11 = December
+
+    // If Christmas has passed this year, look at next year's Christmas
+    if (now > christmas) {
+      christmas.setFullYear(christmas.getFullYear() + 1);
+    }
+
+    const timeDiff = christmas - now;
+    const daysUntilChristmas = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+    return {
+      isChristmas: now.getMonth() === 11 && now.getDate() === 25,
+      daysRemaining: daysUntilChristmas,
+      isAlmostChristmas: daysUntilChristmas <= 7,
+      isDayBefore: daysUntilChristmas === 1
+    };
+  };
+
+  // Timer effect to update countdown
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const status = getChristmasStatus();
+      const { daysRemaining } = status;
+
+      setTimeUntilChristmas(
+        daysRemaining === 1
+          ? "1 day"
+          : `${daysRemaining} days`
+      );
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Animation for the present bounce
+  useEffect(() => {
+    const bounceSequence = Animated.sequence([
+      Animated.timing(bounceAnimation, {
+        toValue: 1.051,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(bounceAnimation, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      })
+    ]);
+
+    Animated.loop(bounceSequence).start();
+  }, []);
+
+  // Get appropriate message based on time until Christmas
+  const getMessage = () => {
+    const status = getChristmasStatus();
+    let messageArray;
+
+    if (status.isDayBefore) {
+      messageArray = messages.dayBefore;
+    } else if (status.isAlmostChristmas) {
+      messageArray = messages.almostThere;
+    } else {
+      messageArray = messages.tooEarly;
+    }
+
+    return messageArray[Math.floor(Math.random() * messageArray.length)];
+  };
+
+  // Handle present press with complete logic
+  const handlePresentPress = () => {
+    const status = getChristmasStatus();
+
+    if (!status.isChristmas) {
+      const message = getMessage();
+      setCurrentMessage(message);
+      setTooEarlyModalVisible(true);
+
+      // Shake animation for extra feedback
+      Animated.sequence([
+        Animated.timing(shakeAnimation, {
+          toValue: 10,
+          duration: 100,
+          useNativeDriver: true
+        }),
+        Animated.timing(shakeAnimation, {
+          toValue: -10,
+          duration: 100,
+          useNativeDriver: true
+        }),
+        Animated.timing(shakeAnimation, {
+          toValue: 0,
+          duration: 100,
+          useNativeDriver: true
+        })
+      ]).start();
+
+      return;
+    }
+
+    setIsQuizVisible(true);
+    // Present opening animation
+    Animated.parallel([
+      Animated.spring(slideAnimation, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7
+      }),
+      Animated.timing(opacityAnimation, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true
+      }),
+      Animated.spring(scaleAnimation, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7
+      })
+    ]).start();
+  };
+
+  // Handle quiz answer logic
+  const handleAnswer = (selectedAnswer) => {
+    if (selectedAnswer === questions[0].answer) {
+      setHasWon(true);
+      // Success animation can be added here
+    } else {
+      // Wrong answer shake animation
+      Animated.sequence([
+        Animated.timing(shakeAnimation, {
+          toValue: 10,
+          duration: 100,
+          useNativeDriver: true
+        }),
+        Animated.timing(shakeAnimation, {
+          toValue: -10,
+          duration: 100,
+          useNativeDriver: true
+        }),
+        Animated.timing(shakeAnimation, {
+          toValue: 0,
+          duration: 100,
+          useNativeDriver: true
+        })
+      ]).start();
+    }
+  };
+
+  // Handle modal closing animation and state reset
   const handleClose = () => {
     Animated.parallel([
       Animated.timing(slideAnimation, {
@@ -67,28 +232,17 @@ const ChristmasSurprise = () => {
     });
   };
 
-  const handleAnswer = (selectedAnswer) => {
-    if (selectedAnswer === questions[0].answer) {
-      setHasWon(true);
-    } else {
-      Animated.sequence([
-        Animated.timing(shakeAnimation, {
-          toValue: 10,
-          duration: 100,
-          useNativeDriver: true
-        }),
-        Animated.timing(shakeAnimation, {
-          toValue: -10,
-          duration: 100,
-          useNativeDriver: true
-        }),
-        Animated.timing(shakeAnimation, {
-          toValue: 0,
-          duration: 100,
-          useNativeDriver: true
-        })
-      ]).start();
+  // Render countdown text
+  const renderCountdown = () => {
+    const status = getChristmasStatus();
+    if (status.isChristmas) {
+      return <Text style={styles.countdownText}>It's Christmas! 🎄</Text>;
     }
+    return (
+      <Text style={styles.countdownText}>
+        {`Christmas in ${timeUntilChristmas}! 🎄`}
+      </Text>
+    );
   };
 
   return (
@@ -97,12 +251,18 @@ const ChristmasSurprise = () => {
 
       <View style={styles.mainContent}>
         <View style={styles.featureBox}>
-          <Text style={styles.snowflake}>❄️</Text>
-          <Text style={styles.snowflake}>❄️</Text>
-          <Text style={styles.snowflake}>❄️</Text>
+          {renderCountdown()}
         </View>
 
-        <View style={styles.presentContainer}>
+        <Animated.View style={[
+          styles.presentContainer,
+          {
+            transform: [
+              { scale: bounceAnimation },
+              { translateX: shakeAnimation }
+            ]
+          }
+        ]}>
           <TouchableOpacity
             onPress={handlePresentPress}
             style={styles.presentButton}
@@ -118,7 +278,7 @@ const ChristmasSurprise = () => {
               🎄 Tap to unwrap your Christmas surprise! 🎄
             </Text>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
 
         <View style={styles.featureBox}>
           <Text style={styles.decorationText}>🎅</Text>
@@ -127,6 +287,35 @@ const ChristmasSurprise = () => {
         </View>
       </View>
 
+      {/* Too Early Modal */}
+      <Modal
+        visible={tooEarlyModalVisible}
+        transparent={true}
+        animationType="fade"
+      >
+        <View style={styles.modalOverlay}>
+          <Animated.View style={[
+            styles.tooEarlyModalContainer,
+            {
+              transform: [{ scale: scaleAnimation }]
+            }
+          ]}>
+            <Text style={styles.tooEarlyEmoji}>🎅</Text>
+            <Text style={styles.tooEarlyText}>{currentMessage}</Text>
+            <Text style={styles.countdownSubtext}>
+              {timeUntilChristmas} until Christmas!
+            </Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setTooEarlyModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Ok, I'll be patient!</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </Modal>
+
+      {/* Quiz Modal */}
       <Modal
         visible={isQuizVisible}
         transparent={true}
@@ -365,6 +554,27 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  tooEarlyModalContainer: {
+    backgroundColor: '#0c2f1f',
+    borderRadius: 24,
+    padding: 24,
+    width: width * 0.85,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#fecdd3',
+  },
+  tooEarlyEmoji: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  tooEarlyText: {
+    fontSize: 20,
+    color: '#f0f9ff',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 28,
+    fontWeight: '600',
   },
 });
 
