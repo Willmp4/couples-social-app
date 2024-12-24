@@ -78,7 +78,7 @@ const ChristmasSurprise = () => {
   };
 
   const getChristmasStatus = () => {
-    const now = new Date(2024, 11, 25);
+    const now = new Date();
     const christmas = new Date(now.getFullYear(), 11, 25);
 
     if (now > christmas) {
