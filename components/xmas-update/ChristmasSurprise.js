@@ -12,6 +12,7 @@ const ChristmasSurprise = () => {
   const [tooEarlyModalVisible, setTooEarlyModalVisible] = useState(false);
   const [currentMessage, setCurrentMessage] = useState('');
   const [timeUntilChristmas, setTimeUntilChristmas] = useState('');
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   // Animations
@@ -21,14 +22,34 @@ const ChristmasSurprise = () => {
   const opacityAnimation = useRef(new Animated.Value(0)).current;
   const bounceAnimation = useRef(new Animated.Value(1)).current;
 
-  // Quiz data
-  const questions = [{
-    question: "What were you wearing when we first kissed?",
-    answer: "Green Rompa",
-    options: ["Onesie", "Black Dress", "Green Rompa", "Nothing;)"]
-  }];
+  const questions = [
+    {
+      question: "What were you wearing when we first kissed?",
+      answer: "Green Rompa",
+      options: ["Onesie", "Black Dress", "Green Rompa", "Nothing;)"]
+    },
+    {
+      question: "Where is the first place we went on hoilday together?",
+      answer: "Majorca",
+      options: ["Poland", "New York", "Majorca", "Ibiza"]
+    },
+    {
+      question: "Where was our second date?",
+      answer: "A Fancy Restaurant",
+      options: ["The Movies", "The Beach", "A Fancy Restaurant", "The Park"]
+    },
+    {
+      question: "Which musical have we seen together?",
+      answer: "Starlight Express",
+      options: ["Starlight Express", "Sound of Music", "Lion King", "Phantom of the Opera"]
+    },
+    {
+      question: "Which of these is our song?",
+      answer: "I Love You",
+      options: ["All of Me", "I Love You", "Just the Way You Are", "At Last"]
+    }
+  ];
 
-  // Funny messages for different time periods
   const messages = {
     tooEarly: [
       "Ho ho hold your horses! 🎅 Santa hasn't cleared you for present opening yet!",
@@ -56,12 +77,10 @@ const ChristmasSurprise = () => {
     ]
   };
 
-  // Date checking logic
   const getChristmasStatus = () => {
-    const now = new Date();
-    const christmas = new Date(now.getFullYear(), 11, 25); // Month is 0-based, so 11 = December
+    const now = new Date(2024, 11, 25);
+    const christmas = new Date(now.getFullYear(), 11, 25);
 
-    // If Christmas has passed this year, look at next year's Christmas
     if (now > christmas) {
       christmas.setFullYear(christmas.getFullYear() + 1);
     }
@@ -77,7 +96,7 @@ const ChristmasSurprise = () => {
     };
   };
 
-  // Timer effect to update countdown
+  // Timer effect
   useEffect(() => {
     const timer = setInterval(() => {
       const status = getChristmasStatus();
@@ -93,7 +112,7 @@ const ChristmasSurprise = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Animation for the present bounce
+  // Bounce animation
   useEffect(() => {
     const bounceSequence = Animated.sequence([
       Animated.timing(bounceAnimation, {
@@ -111,7 +130,6 @@ const ChristmasSurprise = () => {
     Animated.loop(bounceSequence).start();
   }, []);
 
-  // Get appropriate message based on time until Christmas
   const getMessage = () => {
     const status = getChristmasStatus();
     let messageArray;
@@ -127,7 +145,6 @@ const ChristmasSurprise = () => {
     return messageArray[Math.floor(Math.random() * messageArray.length)];
   };
 
-  // Handle present press with complete logic
   const handlePresentPress = () => {
     const status = getChristmasStatus();
 
@@ -136,7 +153,6 @@ const ChristmasSurprise = () => {
       setCurrentMessage(message);
       setTooEarlyModalVisible(true);
 
-      // Shake animation for extra feedback
       Animated.sequence([
         Animated.timing(shakeAnimation, {
           toValue: 10,
@@ -159,7 +175,6 @@ const ChristmasSurprise = () => {
     }
 
     setIsQuizVisible(true);
-    // Present opening animation
     Animated.parallel([
       Animated.spring(slideAnimation, {
         toValue: 0,
@@ -181,13 +196,14 @@ const ChristmasSurprise = () => {
     ]).start();
   };
 
-  // Handle quiz answer logic
   const handleAnswer = (selectedAnswer) => {
-    if (selectedAnswer === questions[0].answer) {
-      setHasWon(true);
-      // Success animation can be added here
+    if (selectedAnswer === questions[currentQuestionIndex].answer) {
+      if (currentQuestionIndex === questions.length - 1) {
+        setHasWon(true);
+      } else {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      }
     } else {
-      // Wrong answer shake animation
       Animated.sequence([
         Animated.timing(shakeAnimation, {
           toValue: 10,
@@ -208,7 +224,6 @@ const ChristmasSurprise = () => {
     }
   };
 
-  // Handle modal closing animation and state reset
   const handleClose = () => {
     Animated.parallel([
       Animated.timing(slideAnimation, {
@@ -229,10 +244,10 @@ const ChristmasSurprise = () => {
     ]).start(() => {
       setIsQuizVisible(false);
       setHasWon(false);
+      setCurrentQuestionIndex(0);
     });
   };
 
-  // Render countdown text
   const renderCountdown = () => {
     const status = getChristmasStatus();
     if (status.isChristmas) {
@@ -242,6 +257,23 @@ const ChristmasSurprise = () => {
       <Text style={styles.countdownText}>
         {`Christmas in ${timeUntilChristmas}! 🎄`}
       </Text>
+    );
+  };
+
+  const renderQuizProgress = () => {
+    return (
+      <View style={styles.progressContainer}>
+        {questions.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.progressDot,
+              index === currentQuestionIndex ? styles.progressDotActive : null,
+              index < currentQuestionIndex ? styles.progressDotCompleted : null
+            ]}
+          />
+        ))}
+      </View>
     );
   };
 
@@ -334,11 +366,14 @@ const ChristmasSurprise = () => {
                 <Animated.View style={[styles.quizContainer, {
                   transform: [{ translateX: shakeAnimation }]
                 }]}>
+                  {renderQuizProgress()}
                   <View style={styles.questionCard}>
-                    <Text style={styles.questionText}>{questions[0].question}</Text>
+                    <Text style={styles.questionText}>
+                      {questions[currentQuestionIndex].question}
+                    </Text>
                   </View>
                   <View style={styles.optionsContainer}>
-                    {questions[0].options.map((option, index) => (
+                    {questions[currentQuestionIndex].options.map((option, index) => (
                       <TouchableOpacity
                         key={index}
                         onPress={() => handleAnswer(option)}
@@ -358,11 +393,11 @@ const ChristmasSurprise = () => {
                     />
                   </View>
                   <Text style={styles.congratsText}>
-                    🎭 You're going to Hamilton! 🎭
+                    🎭 We are going see see Hamilton at the end of August my love! 🎭
                   </Text>
                   <Text style={styles.messageText}>
                     Merry Christmas! {'\n'}
-                    I can't wait to share this incredible show with you! ❤️
+                    I can't wait to see this incredible show with you bubba! ❤️
                   </Text>
                   <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
                     <Text style={styles.closeButtonText}>Close</Text>
